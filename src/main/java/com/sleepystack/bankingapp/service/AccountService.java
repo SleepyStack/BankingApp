@@ -30,7 +30,8 @@ public class AccountService {
         return accountRepository.save(updatedAccount);
     }
     public void deleteAccount(String id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
         accountRepository.deleteById(id);
     }
-
 }
