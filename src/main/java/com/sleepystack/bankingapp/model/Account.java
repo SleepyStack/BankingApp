@@ -5,17 +5,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "accounts")
 public class Account {
     @Id
+    private String userId;
     private String id;
     private String accountNumber;
-    private String accountType;
+    private String accountTypeId;
     private double balance;
 
     public Account() {} // Default constructor required by Spring Data
 
-    public Account(String id, String accountNumber, String accountType, double balance) {
+    public Account(String id, String accountNumber, String accountTypeId, double balance) {
         this.id = id;
         this.accountNumber = accountNumber;
-        this.accountType = accountType;
+        this.accountTypeId = accountTypeId;
         this.balance = balance;
     }
 
@@ -35,12 +36,12 @@ public class Account {
         this.accountNumber = accountNumber;
     }
 
-    public String getAccountType() {
-        return accountType;
+    public String getAccountTypeId() {
+        return accountTypeId;
     }
 
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
+    public void setAccountTypeId(String accountTypeId) {
+        this.accountTypeId = accountTypeId;
     }
 
     public double getBalance() {
@@ -49,5 +50,13 @@ public class Account {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
