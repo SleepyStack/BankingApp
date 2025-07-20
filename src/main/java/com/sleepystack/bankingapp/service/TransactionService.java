@@ -19,7 +19,7 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
     }
-    public Transaction deposit(String accountId, double amount, String userId, String descrition){
+    public Transaction deposit(String accountId, double amount, String userId, String description){
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
         if(amount <= 0){
@@ -30,7 +30,7 @@ public class TransactionService {
         Transaction transaction = new Transaction(null, accountId, "deposit", amount, Instant.now(), null, "completed", userId, "Money Deposited via SELF");
         return transactionRepository.save(transaction);
     }
-    public Transaction withdraw(String accountId, double amount, String userId, String descrition){
+    public Transaction withdraw(String accountId, double amount, String userId, String description){
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
         if(amount <= 0){
@@ -42,6 +42,24 @@ public class TransactionService {
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
         Transaction transaction = new Transaction(null, accountId, "Withdrawal", amount, Instant.now(), null, "completed", userId, "Money Withdrawn via SELF");
+        return transactionRepository.save(transaction);
+    }
+    public Transaction transfer(String fromAccountId, String toAccountId, double amount, String userId, String description) {
+        Account fromAccount = accountRepository.findById(fromAccountId)
+                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        Account toAccount = accountRepository.findById(toAccountId)
+                .orElseThrow(() -> new IllegalArgumentException("Target account not found"));
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Transfer amount must be greater than zero");
+        }
+        if (fromAccount.getBalance() < amount) {
+            throw new IllegalArgumentException("Insufficient funds for transfer");
+        }
+        fromAccount.setBalance(fromAccount.getBalance() - amount);
+        toAccount.setBalance(toAccount.getBalance() + amount);
+        accountRepository.save(fromAccount);
+        accountRepository.save(toAccount);
+        Transaction transaction = new Transaction(null, fromAccountId, "transfer", amount, Instant.now(), toAccountId, "completed", userId, "Money Transferred via SELF");
         return transactionRepository.save(transaction);
     }
 }
