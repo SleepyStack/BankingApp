@@ -27,7 +27,10 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null, accountId, "deposit", amount, Instant.now(), null, "completed", userId, "Money Deposited via SELF");
+        Transaction transaction = new Transaction(null, accountId, "deposit", amount, Instant.now(), null, "completed", userId, String.format(
+                "Deposit of $%.2f to Account %s by User %s.",
+                amount, accountId, userId
+        ));
         return transactionRepository.save(transaction);
     }
     public Transaction withdraw(String accountId, double amount, String userId, String description){
@@ -41,7 +44,10 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null, accountId, "Withdrawal", amount, Instant.now(), null, "completed", userId, "Money Withdrawn via SELF");
+        Transaction transaction = new Transaction(null, accountId, "Withdrawal", amount, Instant.now(), null, "completed", userId, String.format(
+                "Withdrawal of $%.2f from Account %s by User %s.",
+                amount, accountId, userId
+        ));
         return transactionRepository.save(transaction);
     }
     public Transaction transfer(String fromAccountId, String toAccountId, double amount, String userId, String description) {
@@ -59,7 +65,10 @@ public class TransactionService {
         toAccount.setBalance(toAccount.getBalance() + amount);
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
-        Transaction transaction = new Transaction(null, fromAccountId, "transfer", amount, Instant.now(), toAccountId, "completed", userId, "Money Transferred via SELF");
+        Transaction transaction = new Transaction(null, fromAccountId, "transfer", amount, Instant.now(), toAccountId, "completed", userId, String.format(
+                "Transfer of $%.2f from Account %s to Account %s by User %s.",
+                amount, fromAccountId, toAccountId, userId
+        ));
         return transactionRepository.save(transaction);
-    }
+        }
 }
