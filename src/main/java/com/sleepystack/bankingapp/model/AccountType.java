@@ -7,7 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class AccountType {
     @Id
     private String id;
-    private String typeName; // e.g., "Savings", "Checking"
+
+    private String typeName;
     private String description;
 
     public AccountType() {}

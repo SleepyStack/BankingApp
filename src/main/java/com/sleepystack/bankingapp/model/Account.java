@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Account {
     @Id
     private String userId;
+
     private String id;
     private String accountNumber;
     private String accountTypeId;
