@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public class AccountTypeService {
     private final AccountTypeRepository accountTypeRepository;
+
     @Autowired
     public AccountTypeService(AccountTypeRepository accountTypeRepository) {
         this.accountTypeRepository = accountTypeRepository;
