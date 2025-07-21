@@ -21,7 +21,7 @@ public class UserController {
     public User createUser(@RequestBody User user){
         return userService.createUser(user);
     }
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     public User getUser(@PathVariable String id){
         return userService.getUser(id);
     }

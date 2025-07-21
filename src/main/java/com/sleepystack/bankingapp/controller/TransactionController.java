@@ -17,21 +17,21 @@ public class TransactionController {
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
-    @PostMapping
+    @PostMapping("/deposit")
     public Transaction deposit(@RequestParam String accountId,
                                @RequestParam double amount,
                                @RequestParam String userId,
                                @RequestParam(required = false) String description) {
         return transactionService.deposit(accountId,amount,userId,description);
     }
-    @PostMapping
+    @PostMapping("/withdraw")
     public Transaction withdraw(@RequestParam String accountId,
                                 @RequestParam double amount,
                                 @RequestParam String userId,
                                 @RequestParam(required = false) String description) {
         return transactionService.withdraw(accountId, amount, userId, description);
     }
-    @PostMapping
+    @PostMapping("/transfer")
     public Transaction transfer(@RequestParam String fromAccountId,
                                 @RequestParam String toAccountId,
                                 @RequestParam double amount,
