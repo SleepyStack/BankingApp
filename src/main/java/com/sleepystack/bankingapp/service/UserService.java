@@ -5,6 +5,8 @@ import com.sleepystack.bankingapp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -18,6 +20,9 @@ public class UserService {
     public User getUser(String id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
     }
     public User updateUser(String id, User updatedUser){
         User user = userRepository.findById(id)
