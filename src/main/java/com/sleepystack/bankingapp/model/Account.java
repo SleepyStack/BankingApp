@@ -14,7 +14,8 @@ public class Account {
 
     public Account() {} // Default constructor required by Spring Data
 
-    public Account(String id, String accountNumber, String accountTypeId, double balance) {
+    public Account(String userId, String id, String accountNumber, String accountTypeId, double balance) {
+        this.userId = userId;
         this.id = id;
         this.accountNumber = accountNumber;
         this.accountTypeId = accountTypeId;
