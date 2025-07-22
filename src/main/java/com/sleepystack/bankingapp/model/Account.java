@@ -11,17 +11,15 @@ public class Account {
     private String accountNumber;
     private String accountTypeId;
     private double balance;
-    private String publicIdentifier;
 
     public Account() {}
 
-    public Account(String id, String userId, String accountNumber, double balance, String publicIdentifier, String accountTypeId) {
+    public Account(String id, String userId, String accountNumber, double balance, String accountTypeId) {
         this.id = id;
         this.userId = userId;
         this.accountNumber = accountNumber;
-        this.balance = balance;
-        this.publicIdentifier = publicIdentifier;
         this.accountTypeId = accountTypeId;
+        this.balance = balance;
     }
 
     public String getId() {
@@ -64,13 +62,6 @@ public class Account {
         this.balance = balance;
     }
 
-    public String getPublicIdentifier() {
-        return publicIdentifier;
-    }
-
-    public void setPublicIdentifier(String publicIdentifier) {
-        this.publicIdentifier = publicIdentifier;
-    }
 }
 
 

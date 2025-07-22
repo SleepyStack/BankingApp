@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 
-@RequestMapping("/accounts")
+@RequestMapping("//{userPublicId}/{accountTypePublicId}")
 public class AccountController {
     private final AccountService accountService;
 

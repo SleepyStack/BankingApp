@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
     @Id
     private String id;
-    private String publicId;
+    private String publicIdentifier;
 
     private String name;
     private String email;
@@ -15,9 +15,9 @@ public class User {
 
     public User() {} // Default constructor required by Spring Data
 
-    public User(String id, String publicId, String name, String email, String phone) {
+    public User(String id, String publicIdentifier, String name, String email, String phone) {
         this.id = id;
-        this.publicId = publicId;
+        this.publicIdentifier = publicIdentifier;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -48,11 +48,11 @@ public class User {
         this.phone = phone;
     }
 
-    public String getPublicId() {
-        return publicId;
+    public String getPublicIdentifier() {
+        return publicIdentifier;
     }
 
-    public void setPublicId(String publicId) {
-        this.publicId = publicId;
+    public void setPublicIdentifier(String publicIdentifier) {
+        this.publicIdentifier = publicIdentifier;
     }
 }
