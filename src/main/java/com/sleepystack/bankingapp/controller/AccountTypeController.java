@@ -20,6 +20,11 @@ public class AccountTypeController {
 
     @PostMapping
     public AccountType createAccountType(@RequestBody AccountType type) {
+        // Manual validation for 2-letter alphabetic code
+        String publicIdentifier = type.getPublicIdentifier();
+        if (publicIdentifier == null || !publicIdentifier.matches("^[A-Za-z]{2}$")) {
+            throw new IllegalArgumentException("publicIdentifier must be exactly 2 alphabetic characters");
+        }
         return accountTypeService.createAccountType(type);
     }
 

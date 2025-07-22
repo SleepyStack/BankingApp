@@ -9,13 +9,15 @@ public class AccountType {
     private String id;
 
     private String typeName;
+    private String publicIdentifier;
     private String description;
 
     public AccountType() {}
 
-    public AccountType(String id, String typeName, String description) {
+    public AccountType(String id, String typeName,String publicIdentifier, String description) {
         this.id = id;
         this.typeName = typeName;
+        this.publicIdentifier = publicIdentifier;
         this.description = description;
     }
 
@@ -28,4 +30,12 @@ public class AccountType {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getPublicIdentifier() {
+        return publicIdentifier;
+    }
+
+    public void setPublicIdentifier(String publicIdentifier) {
+        this.publicIdentifier = publicIdentifier;
+    }
 }
