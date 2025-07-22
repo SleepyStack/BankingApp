@@ -1,6 +1,7 @@
 package com.sleepystack.bankingapp.service;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.repository.AccountRepository;
+import com.sleepystack.bankingapp.util.AccountNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

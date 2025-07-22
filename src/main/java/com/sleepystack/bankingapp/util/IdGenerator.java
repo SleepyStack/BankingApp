@@ -1,4 +1,4 @@
-package com.sleepystack.bankingapp.utils;
+package com.sleepystack.bankingapp.util;
 import com.sleepystack.bankingapp.model.User;
 
 import java.util.UUID;
