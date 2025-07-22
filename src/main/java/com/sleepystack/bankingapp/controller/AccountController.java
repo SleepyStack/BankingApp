@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-
-@RequestMapping("//{userPublicId}/{accountTypePublicId}")
+@RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
 
@@ -17,25 +16,30 @@ public class AccountController {
     public AccountController(AccountService accountService){
         this.accountService = accountService;
     }
+
     @PostMapping
-    public Account CreateAccount(@RequestBody Account account){
+    public Account createAccount(@RequestBody Account account){
         return accountService.createAccount(account);
     }
-    @GetMapping("/{id}")
-    public Account getAccountById(@PathVariable String id){
-        return accountService.findAccountById(id)
+
+    @GetMapping("/{accountNumber}")
+    public Account getAccountByAccountNumber(@PathVariable String accountNumber){
+        return accountService.findAccountByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
     }
+
     @GetMapping
     public List<Account> getAllAccounts(){
         return accountService.findAll();
     }
-    @PutMapping("/{id}")
-    public Account updateAccount(@PathVariable String id, @RequestBody Account account){
-        return accountService.updateAccount(id, account);
+
+    @PutMapping("/{accountNumber}")
+    public Account updateAccount(@PathVariable String accountNumber, @RequestBody Account account){
+        return accountService.updateAccountByAccountNumber(accountNumber, account);
     }
-    @DeleteMapping("/{id}")
-    public void deleteAccount(@PathVariable String id){
-        accountService.deleteAccount(id);
+
+    @DeleteMapping("/{accountNumber}")
+    public void deleteAccount(@PathVariable String accountNumber){
+        accountService.deleteAccountByAccountNumber(accountNumber);
     }
-} 
+}

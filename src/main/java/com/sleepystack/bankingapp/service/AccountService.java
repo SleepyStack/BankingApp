@@ -17,23 +17,31 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
     public Account createAccount(Account account) {
+        String accountNumber;
+        //TODO: accountNumber should be unique, so we need to externally check it via MONGO DB too.
+        do {
+            accountNumber = AccountNumberGenerator.generateAccountNumber();
+        } while (accountRepository.existsByAccountNumber(accountNumber));
+        account.setAccountNumber(accountNumber);
         return accountRepository.save(account);
     }
-    public Optional<Account> findAccountById(String id) {
-        return accountRepository.findById(id);
+    public Optional<Account> findAccountByAccountNumber(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found with account number: " + accountNumber));
+        return accountRepository.findByAccountNumber(accountNumber);
     }
     public List<Account> findAll() {
         return accountRepository.findAll();
     }
-    public Account updateAccount(String id, Account updatedAccount) {
-        Account account = accountRepository.findById(id)
+    public Account updateAccountByAccountNumber(String accountNumber, Account updatedAccount) {
+        Account existing = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-        updatedAccount.setId(id);
+        updatedAccount.setId(existing.getId());
         return accountRepository.save(updatedAccount);
     }
-    public void deleteAccount(String id) {
-        Account account = accountRepository.findById(id)
+    public void deleteAccountByAccountNumber(String accountNumber) {
+        Account existing = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-        accountRepository.deleteById(id);
+        accountRepository.deleteById(existing.getId());
     }
 }
