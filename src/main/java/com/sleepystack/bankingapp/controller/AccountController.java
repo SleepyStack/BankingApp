@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/users/{userPublicId}/accounts")
 public class AccountController {
     private final AccountService accountService;
 
@@ -17,25 +17,30 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @PostMapping
-    public Account createAccount(@RequestBody Account account){
-        return accountService.createAccount(account);
+    // Create new account for user & account type
+    @PostMapping("/{accountTypePublicIdentifier}")
+    public Account createAccount(@PathVariable String userPublicId,
+                                 @PathVariable String accountTypePublicIdentifier,
+                                 @RequestBody Account account) {
+        return accountService.createAccountWithUserAndType(userPublicId, accountTypePublicIdentifier, account);
     }
 
-    @GetMapping("/{accountNumber}")
-    public Account getAccountByAccountNumber(@PathVariable String accountNumber){
-        return accountService.findAccountByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-    }
-
+    // List all accounts for user
     @GetMapping
-    public List<Account> getAllAccounts(){
-        return accountService.findAll();
+    public List<Account> getAllAccountsForUser(@PathVariable String userPublicId) {
+        return accountService.findAllByUserPublicId(userPublicId);
+    }
+
+    // Get specific account by account number for user
+    @GetMapping("/{accountNumber}")
+    public Account getAccount(@PathVariable String userPublicId,
+                              @PathVariable String accountNumber) {
+        return accountService.getByUserPublicIdAndAccountNumber(userPublicId, accountNumber);
     }
 
     @PutMapping("/{accountNumber}")
-    public Account updateAccount(@PathVariable String accountNumber, @RequestBody Account account){
-        return accountService.updateAccountByAccountNumber(accountNumber, account);
+    public Account updateAccount(@PathVariable String userPublicId, @PathVariable String accountNumber, @RequestBody Account account) {
+        return accountService.updateAccountForUser(userPublicId, accountNumber, account);
     }
 
     @DeleteMapping("/{accountNumber}")

@@ -26,6 +26,22 @@ public class AccountService {
         this.accountTypeRepository = accountTypeRepository;
     }
 
+    public Account createAccountWithUserAndType(String userPublicId, String accountTypePublicIdentifier, Account account) {
+        User user = userRepository.findByPublicId(userPublicId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicIdentifier)
+                .orElseThrow(() -> new RuntimeException("Account type not found"));
+        // Generate unique account number
+        String accountNumber;
+        do {
+            accountNumber = generateAccountNumber();
+        } while (accountRepository.existsByAccountNumber(accountNumber));
+        account.setUserId(user.getId());
+        account.setAccountTypeId(accountType.getId());
+        account.setAccountNumber(accountNumber);
+        return accountRepository.save(account);
+    }
+
     public List<Account> findAllByUserPublicId(String userPublicId) {
         User user = userRepository.findByPublicId(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -35,18 +51,22 @@ public class AccountService {
     public Account getByUserPublicIdAndAccountNumber(String userPublicId, String accountNumber) {
         User user = userRepository.findByPublicId(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return accountRepository.findByAccountNumber(accountNumber)
-                .filter(acc -> acc.getUserId().equals(user.getId()))
+        return accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
                 .orElseThrow(() -> new RuntimeException("Account not found for this user"));
     }
 
-    public Account createAccountWithUserAndType(String userPublicId, String accountTypePublicId, Account account) {
+    public Account updateAccountForUser(String userPublicId, String accountNumber, Account updatedAccount) {
         User user = userRepository.findByPublicId(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicId)
-                .orElseThrow(() -> new RuntimeException("Account type not found"));
-        account.setUserId(user.getId());
-        account.setAccountTypeId(accountType.getId());
-        return accountRepository.save(account);
+        Account existingAccount = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> new RuntimeException("Account not found for this user"));
+        existingAccount.setBalance(updatedAccount.getBalance());
+        return accountRepository.save(existingAccount);
+    }
+
+    public void deleteAccountByAccountNumber(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        accountRepository.deleteById(account.getId());
     }
 }
