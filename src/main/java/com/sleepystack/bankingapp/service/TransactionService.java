@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -73,5 +74,13 @@ public class TransactionService {
         Transaction transaction = new Transaction(null,fromAccount.getId(), accountNumber,"transfer",amount, Instant.now(),
                 toAccount.getId(), targetAccountNumber,"Completed", fromAccount.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
-        }
+    }
+
+    public List<Transaction> getTransactionsForAccount(String accountNumber) {
+        return transactionRepository.findByAccountNumberOrderByTimestampDesc(accountNumber);
+    }
+
+    public List<Transaction> getTransactionsForUser(String userId) {
+        return transactionRepository.findByInitiatedByUserIdOrderByTimestampDesc(userId);
+    }
 }
