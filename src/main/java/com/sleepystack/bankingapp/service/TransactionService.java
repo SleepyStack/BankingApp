@@ -34,7 +34,7 @@ public class TransactionService {
                 null, null,"Completed", account.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
     }
-    public Transaction withdraw(String userPublicId, String accountNumber, double amount, String description){
+    public Transaction withdrawal(String userPublicId, String accountNumber, double amount, String description){
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
         if(amount <= 0){

@@ -30,7 +30,7 @@ public class TransactionController {
             @PathVariable String accountNumber,
             @RequestParam double amount,
             @RequestParam(required = false) String description) {
-        return transactionService.withdraw(userPublicId, accountNumber, amount, description);
+        return transactionService.withdrawal(userPublicId, accountNumber, amount, description);
     }
 
     @PostMapping("/transfer")
