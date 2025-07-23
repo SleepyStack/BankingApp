@@ -19,20 +19,20 @@ public class UserService {
         return userRepository.save(user);
     }
     public User getUserByPublicId(String publicId) {
-        return userRepository.findByPublicId(publicId)
+        return userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
     public User updateUserByPublicId(String publicId, User updatedUser){
-        User user = userRepository.findByPublicId(publicId)
+        User user = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         updatedUser.setId(user.getId());
         return userRepository.save(updatedUser);
     }
     public void deleteUserByPublicId(String publicId){
-        User user = userRepository.findByPublicId(publicId)
+        User user = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.deleteById(user.getId());
     }
