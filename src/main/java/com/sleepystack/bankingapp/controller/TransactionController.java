@@ -3,13 +3,10 @@ package com.sleepystack.bankingapp.controller;
 import com.sleepystack.bankingapp.model.Transaction;
 import com.sleepystack.bankingapp.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/users/{userPublicId}/accounts/{accountNumber}/transactions")
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -18,25 +15,25 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
     @PostMapping("/deposit")
-    public Transaction deposit(@RequestParam String accountId,
-                               @RequestParam double amount,
-                               @RequestParam String userId,
-                               @RequestParam(required = false) String description) {
-        return transactionService.deposit(accountId,amount,userId,description);
+    public Transaction deposit( @PathVariable String accountNumber,
+                                @RequestParam double amount,
+                                @PathVariable String userPublicId,
+                                @RequestParam(required = false) String description) {
+        return transactionService.deposit(accountNumber,amount,userPublicId,description);
     }
     @PostMapping("/withdraw")
-    public Transaction withdraw(@RequestParam String accountId,
+    public Transaction withdraw(@PathVariable String accountNumber,
                                 @RequestParam double amount,
-                                @RequestParam String userId,
+                                @PathVariable String userPublicId,
                                 @RequestParam(required = false) String description) {
-        return transactionService.withdraw(accountId, amount, userId, description);
+        return transactionService.withdraw(accountNumber, amount, userPublicId, description);
     }
     @PostMapping("/transfer")
-    public Transaction transfer(@RequestParam String fromAccountId,
+    public Transaction transfer(@PathVariable String accountNumber,
                                 @RequestParam String toAccountId,
                                 @RequestParam double amount,
-                                @RequestParam String userId,
+                                @PathVariable String userPublicId,
                                 @RequestParam(required = false) String description) {
-        return transactionService.transfer(fromAccountId, toAccountId, amount, userId, description);
+        return transactionService.transfer(accountNumber, toAccountId, amount, userPublicId, description);
     }
 }
