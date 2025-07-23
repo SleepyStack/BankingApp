@@ -28,7 +28,7 @@ public class AccountService {
     }
 
     public Account createAccountWithUserAndType(String userPublicId, String accountTypePublicIdentifier, Account account) {
-        User user = userRepository.findByPublicId(userPublicId)
+        User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicIdentifier)
                 .orElseThrow(() -> new RuntimeException("Account type not found"));
@@ -44,20 +44,20 @@ public class AccountService {
     }
 
     public List<Account> findAllByUserPublicId(String userPublicId) {
-        User user = userRepository.findByPublicId(userPublicId)
+        User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return accountRepository.findAllByUserId(user.getId());
     }
 
     public Account getByUserPublicIdAndAccountNumber(String userPublicId, String accountNumber) {
-        User user = userRepository.findByPublicId(userPublicId)
+        User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
                 .orElseThrow(() -> new RuntimeException("Account not found for this user"));
     }
 
     public Account updateAccountForUser(String userPublicId, String accountNumber, Account updatedAccount) {
-        User user = userRepository.findByPublicId(userPublicId)
+        User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Account existingAccount = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
                 .orElseThrow(() -> new RuntimeException("Account not found for this user"));

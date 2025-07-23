@@ -18,22 +18,22 @@ public class UserService {
     public User createUser(User user) {
         return userRepository.save(user);
     }
-    public User getUser(String id){
-        return userRepository.findById(id)
+    public User getUserByPublicId(String publicId) {
+        return userRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
-    public User updateUser(String id, User updatedUser){
-        User user = userRepository.findById(id)
+    public User updateUserByPublicId(String publicId, User updatedUser){
+        User user = userRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        updatedUser.setId(id);
+        updatedUser.setId(user.getId());
         return userRepository.save(updatedUser);
     }
-    public void deleteUser(String id){
-        User user = userRepository.findById(id)
+    public void deleteUserByPublicId(String publicId){
+        User user = userRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        userRepository.deleteById(id);
+        userRepository.deleteById(user.getId());
     }
 }

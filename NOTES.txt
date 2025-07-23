@@ -1,0 +1,33 @@
+TODO: For ACCOUNTS
+Validation: Add validation annotations to models and/or use Spring's validation framework in controllers.
+DTOs: Use Data Transfer Objects for requests and responses to avoid exposing internal entities directly.
+Error Handling: Implement a global exception handler to return user-friendly error messages.
+Security: Add authentication and authorization to restrict account access to the rightful user.
+Status & Auditing: Add fields for status (active, closed, etc.), and timestamps for creation and update.
+Transaction Safety: For balance updates, consider using transactions to avoid race conditions.
+Pagination: Add pagination to listing endpoints for scalability.
+Documentation: Add Swagger/OpenAPI documentation for endpoints.
+Account Number Uniqueness: Consider adding database-level unique constraints if possible.
+
+TODO for API Abstraction and URL Improvements
+
+- [ ] Refactor User endpoints to use `publicIdentifier` (instead of MongoDB `_id`)
+  - Update UserController to accept `publicIdentifier` in all routes
+  - Update UserService and UserRepository to query by `publicIdentifier`
+  - Example: `/users/{publicIdentifier}`
+
+- [ ] Refactor AccountType endpoints to use `publicIdentifier`
+  - Update AccountTypeController to use `publicIdentifier` in all routes
+  - Update AccountTypeService and AccountTypeRepository accordingly
+  - Example: `/account-types/{publicIdentifier}`
+
+- [ ] Refactor Transaction endpoints to use account numbers and user public IDs instead of internal IDs
+  - Update TransactionController to accept account numbers and user public IDs in all transaction-related routes
+  - Update TransactionService to resolve public-facing IDs to internal IDs before processing
+  - Example: `/users/{userPublicId}/accounts/{accountNumber}/transactions/deposit`
+
+- [ ] Add helper methods in services to resolve `publicIdentifier` or account number to internal IDs
+
+- [ ] Update any documentation or API specs to reflect new URL structure
+
+- [ ] Test all endpoints after refactoring to ensure old and new logic works as expected
