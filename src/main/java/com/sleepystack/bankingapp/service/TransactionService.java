@@ -27,10 +27,11 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"deposit",amount, Instant.now(), null, null,"Completed", account.getUserId(), String.format(
-                "Deposit of $%.2f to Account %s by User %s.",
-                amount, accountNumber, account.getUserId())
-        );
+        String finalDescription = (description != null && !description.trim().isEmpty())
+                ? description
+                : String.format("Deposit of $%.2f to Account %s by User %s.", amount, accountNumber, account.getUserId());
+        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"deposit",amount, Instant.now(),
+                null, null,"Completed", account.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
     }
     public Transaction withdraw(String userPublicId, String accountNumber, double amount, String description){
@@ -44,10 +45,11 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"deposit",amount, Instant.now(), null, null,"Completed", account.getUserId(), String.format(
-                "Withdrawal of $%.2f from Account %s by User %s.",
-                amount, accountNumber, account.getUserId())
-        );
+        String finalDescription = (description != null && !description.trim().isEmpty())
+                ? description
+                : String.format("Withdrawal of $%.2f from Account %s by User %s.", amount, accountNumber, account.getUserId());
+        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"withdraw",amount, Instant.now(),
+                null, null,"Completed", account.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
     }
     public Transaction transfer(String userPublicId,String accountNumber,String targetAccountNumber,double amount, String description) {
@@ -65,10 +67,11 @@ public class TransactionService {
         toAccount.setBalance(toAccount.getBalance() + amount);
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
-        Transaction transaction = new Transaction(null,fromAccount.getId(), accountNumber,"deposit",amount, Instant.now(), toAccount.getId(), targetAccountNumber,"Completed", fromAccount.getUserId(), String.format(
-                "Transfer of $%.2f from Account %s to Account %s by User %s.",
-                amount, accountNumber, targetAccountNumber, fromAccount.getUserId()
-        ));
+        String finalDescription = (description != null && !description.trim().isEmpty())
+                ? description
+                : String.format("Transfer of $%.2f from Account %s to Account %s by User %s.", amount, accountNumber, targetAccountNumber, fromAccount.getUserId());
+        Transaction transaction = new Transaction(null,fromAccount.getId(), accountNumber,"transfer",amount, Instant.now(),
+                toAccount.getId(), targetAccountNumber,"Completed", fromAccount.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
         }
 }
