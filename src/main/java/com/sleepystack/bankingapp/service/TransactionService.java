@@ -19,22 +19,21 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
     }
-    public Transaction deposit(String accountId, double amount, String userId, String description){
-        Account account = accountRepository.findById(accountId)
+    public Transaction deposit(String userPublicId, String accountNumber, double amount, String description) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
         if(amount <= 0){
             throw new IllegalArgumentException("Deposit amount must be greater than zero");
         }
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null, accountId, "deposit", amount, Instant.now(), null, "completed", userId, String.format(
-                "Deposit of $%.2f to Account %s by User %s.",
-                amount, accountId, userId
-        ));
+        Transaction transaction = new Transaction(null, accountNumber,amount,"deposit", Instant.now(), null, "completed", account.getUserId(), String.format(
+                "Deposit of $%.2f to Account %s by User %s.")
+        );
         return transactionRepository.save(transaction);
     }
-    public Transaction withdraw(String accountId, double amount, String userId, String description){
-        Account account = accountRepository.findById(accountId)
+    public Transaction withdraw(String userPublicId, String accountNumber, double amount, String description){
+        Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
         if(amount <= 0){
             throw new IllegalArgumentException("Withdrawal amount must be greater than zero");
@@ -44,10 +43,9 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null, accountId, "Withdrawal", amount, Instant.now(), null, "completed", userId, String.format(
-                "Withdrawal of $%.2f from Account %s by User %s.",
-                amount, accountId, userId
-        ));
+        Transaction transaction = new Transaction(null, accountNumber,amount,"deposit", Instant.now(), null, "completed", account.getUserId(), String.format(
+                "Withdrawal of $%.2f from Account %s by User %s.")
+        );
         return transactionRepository.save(transaction);
     }
     public Transaction transfer(String fromAccountId, String toAccountId, double amount, String userId, String description) {

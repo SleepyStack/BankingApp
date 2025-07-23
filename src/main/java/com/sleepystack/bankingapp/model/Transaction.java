@@ -9,7 +9,7 @@ public class Transaction {
     @Id
     private String id;
 
-    private String accountId;
+    private String accountNumber;
     private String type;
     private double amount;
     private Instant timestamp;
@@ -20,11 +20,11 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(String id, String accountId, String type, double amount, Instant timestamp, String targetAccountId, String status, String initiatedByUserId, String description) {
+    public Transaction(String id, String accountNumber, double amount, String type, Instant timestamp, String targetAccountId, String status, String initiatedByUserId, String description) {
         this.id = id;
-        this.accountId = accountId;
-        this.type = type;
+        this.accountNumber = accountNumber;
         this.amount = amount;
+        this.type = type;
         this.timestamp = timestamp;
         this.targetAccountId = targetAccountId;
         this.status = status;
@@ -96,11 +96,11 @@ public class Transaction {
         this.type = type;
     }
 
-    public String getAccountId() {
-        return accountId;
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 }
