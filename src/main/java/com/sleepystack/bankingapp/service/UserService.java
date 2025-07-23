@@ -2,6 +2,7 @@ package com.sleepystack.bankingapp.service;
 
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.model.User;
+import com.sleepystack.bankingapp.util.UserIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
     public User createUser(User user) {
+        String publicId = UserIdGenerator.generateUserId();
+        user.setPublicIdentifier(publicId);
         return userRepository.save(user);
     }
     public User getUserByPublicId(String publicId) {
