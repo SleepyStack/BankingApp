@@ -27,8 +27,9 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null, accountNumber,amount,"deposit", Instant.now(), null, "completed", account.getUserId(), String.format(
-                "Deposit of $%.2f to Account %s by User %s.")
+        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"deposit",amount, Instant.now(), null, null,"Completed", account.getUserId(), String.format(
+                "Deposit of $%.2f to Account %s by User %s.",
+                amount, accountNumber, account.getUserId())
         );
         return transactionRepository.save(transaction);
     }
@@ -43,15 +44,16 @@ public class TransactionService {
         }
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
-        Transaction transaction = new Transaction(null, accountNumber,amount,"deposit", Instant.now(), null, "completed", account.getUserId(), String.format(
-                "Withdrawal of $%.2f from Account %s by User %s.")
+        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"deposit",amount, Instant.now(), null, null,"Completed", account.getUserId(), String.format(
+                "Withdrawal of $%.2f from Account %s by User %s.",
+                amount, accountNumber, account.getUserId())
         );
         return transactionRepository.save(transaction);
     }
-    public Transaction transfer(String fromAccountId, String toAccountId, double amount, String userId, String description) {
-        Account fromAccount = accountRepository.findById(fromAccountId)
+    public Transaction transfer(String userPublicId,String accountNumber,String targetAccountNumber,double amount, String description) {
+        Account fromAccount = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
-        Account toAccount = accountRepository.findById(toAccountId)
+        Account toAccount = accountRepository.findByAccountNumber(targetAccountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Target account not found"));
         if (amount <= 0) {
             throw new IllegalArgumentException("Transfer amount must be greater than zero");
@@ -63,9 +65,9 @@ public class TransactionService {
         toAccount.setBalance(toAccount.getBalance() + amount);
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
-        Transaction transaction = new Transaction(null, fromAccountId, "transfer", amount, Instant.now(), toAccountId, "completed", userId, String.format(
+        Transaction transaction = new Transaction(null,fromAccount.getId(), accountNumber,"deposit",amount, Instant.now(), toAccount.getId(), targetAccountNumber,"Completed", fromAccount.getUserId(), String.format(
                 "Transfer of $%.2f from Account %s to Account %s by User %s.",
-                amount, fromAccountId, toAccountId, userId
+                amount, accountNumber, targetAccountNumber, fromAccount.getUserId()
         ));
         return transactionRepository.save(transaction);
         }
