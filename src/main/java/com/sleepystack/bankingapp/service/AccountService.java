@@ -6,6 +6,7 @@ import com.sleepystack.bankingapp.model.AccountType;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
+import com.sleepystack.bankingapp.util.AccountNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class AccountService {
         // Generate unique account number
         String accountNumber;
         do {
-            accountNumber = generateAccountNumber();
+            accountNumber = AccountNumberGenerator.generateAccountNumber();
         } while (accountRepository.existsByAccountNumber(accountNumber));
         account.setUserId(user.getId());
         account.setAccountTypeId(accountType.getId());
