@@ -5,6 +5,8 @@ import com.sleepystack.bankingapp.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users/{userPublicId}/accounts/{accountNumber}/transactions")
 public class TransactionController {
@@ -41,5 +43,11 @@ public class TransactionController {
             @RequestParam double amount,
             @RequestParam(required = false) String description) {
         return transactionService.transfer(userPublicId, accountNumber, targetAccountNumber, amount, description);
+    }
+    @GetMapping
+    public List<Transaction> getTransactions(
+            @PathVariable String userPublicId,
+            @PathVariable String accountNumber) {
+        return transactionService.getTransactionsForAccount(accountNumber);
     }
 }
