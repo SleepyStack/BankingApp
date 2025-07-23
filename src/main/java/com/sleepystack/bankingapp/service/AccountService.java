@@ -1,47 +1,52 @@
 package com.sleepystack.bankingapp.service;
+
 import com.sleepystack.bankingapp.model.Account;
+import com.sleepystack.bankingapp.model.User;
+import com.sleepystack.bankingapp.model.AccountType;
 import com.sleepystack.bankingapp.repository.AccountRepository;
-import com.sleepystack.bankingapp.util.AccountNumberGenerator;
+import com.sleepystack.bankingapp.repository.UserRepository;
+import com.sleepystack.bankingapp.repository.AccountTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AccountService {
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
+    private final AccountTypeRepository accountTypeRepository;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository,
+                          UserRepository userRepository,
+                          AccountTypeRepository accountTypeRepository) {
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
+        this.accountTypeRepository = accountTypeRepository;
     }
-    public Account createAccount(Account account) {
-        String accountNumber;
-        //TODO: accountNumber should be unique, so we need to externally check it via MONGO DB too.
-        do {
-            accountNumber = AccountNumberGenerator.generateAccountNumber();
-        } while (accountRepository.existsByAccountNumber(accountNumber));
-        account.setAccountNumber(accountNumber);
+
+    public List<Account> findAllByUserPublicId(String userPublicId) {
+        User user = userRepository.findByPublicId(userPublicId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return accountRepository.findAllByUserId(user.getId());
+    }
+
+    public Account getByUserPublicIdAndAccountNumber(String userPublicId, String accountNumber) {
+        User user = userRepository.findByPublicId(userPublicId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return accountRepository.findByAccountNumber(accountNumber)
+                .filter(acc -> acc.getUserId().equals(user.getId()))
+                .orElseThrow(() -> new RuntimeException("Account not found for this user"));
+    }
+
+    public Account createAccountWithUserAndType(String userPublicId, String accountTypePublicId, Account account) {
+        User user = userRepository.findByPublicId(userPublicId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicId)
+                .orElseThrow(() -> new RuntimeException("Account type not found"));
+        account.setUserId(user.getId());
+        account.setAccountTypeId(accountType.getId());
         return accountRepository.save(account);
-    }
-    public Optional<Account> findAccountByAccountNumber(String accountNumber) {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found with account number: " + accountNumber));
-        return accountRepository.findByAccountNumber(accountNumber);
-    }
-    public List<Account> findAll() {
-        return accountRepository.findAll();
-    }
-    public Account updateAccountByAccountNumber(String accountNumber, Account updatedAccount) {
-        Account existing = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-        updatedAccount.setId(existing.getId());
-        return accountRepository.save(updatedAccount);
-    }
-    public void deleteAccountByAccountNumber(String accountNumber) {
-        Account existing = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-        accountRepository.deleteById(existing.getId());
     }
 }
