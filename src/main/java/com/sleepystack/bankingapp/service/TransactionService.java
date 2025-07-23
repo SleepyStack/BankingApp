@@ -13,7 +13,7 @@ import java.time.Instant;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
-
+//TODO add validation for userPublicId to ensure the user owns the account
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
         this.transactionRepository = transactionRepository;
