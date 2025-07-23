@@ -14,26 +14,32 @@ public class TransactionController {
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
+
     @PostMapping("/deposit")
-    public Transaction deposit( @PathVariable String accountNumber,
-                                @RequestParam double amount,
-                                @PathVariable String userPublicId,
-                                @RequestParam(required = false) String description) {
-        return transactionService.deposit(accountNumber,amount,userPublicId,description);
+    public Transaction deposit(
+            @PathVariable String userPublicId,
+            @PathVariable String accountNumber,
+            @RequestParam double amount,
+            @RequestParam(required = false) String description) {
+        return transactionService.deposit(userPublicId, accountNumber, amount, description);
     }
+
     @PostMapping("/withdraw")
-    public Transaction withdraw(@PathVariable String accountNumber,
-                                @RequestParam double amount,
-                                @PathVariable String userPublicId,
-                                @RequestParam(required = false) String description) {
-        return transactionService.withdraw(accountNumber, amount, userPublicId, description);
+    public Transaction withdraw(
+            @PathVariable String userPublicId,
+            @PathVariable String accountNumber,
+            @RequestParam double amount,
+            @RequestParam(required = false) String description) {
+        return transactionService.withdraw(userPublicId, accountNumber, amount, description);
     }
+
     @PostMapping("/transfer")
-    public Transaction transfer(@PathVariable String accountNumber,
-                                @RequestParam String toAccountId,
-                                @RequestParam double amount,
-                                @PathVariable String userPublicId,
-                                @RequestParam(required = false) String description) {
-        return transactionService.transfer(accountNumber, toAccountId, amount, userPublicId, description);
+    public Transaction transfer(
+            @PathVariable String userPublicId,
+            @PathVariable String accountNumber, // source account
+            @RequestParam String targetAccountNumber, // destination account
+            @RequestParam double amount,
+            @RequestParam(required = false) String description) {
+        return transactionService.transfer(userPublicId, accountNumber, targetAccountNumber, amount, description);
     }
 }
