@@ -1,7 +1,9 @@
 package com.sleepystack.bankingapp.controller;
 
+import com.sleepystack.bankingapp.dto.CreateAccountRequest;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.service.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,9 @@ public class AccountController {
     @PostMapping("/{accountTypePublicIdentifier}")
     public Account createAccount(@PathVariable String userPublicId,
                                  @PathVariable String accountTypePublicIdentifier,
-                                 @RequestBody Account account) {
+                                 @RequestBody @Valid CreateAccountRequest request) {
+        Account account = new Account();
+        account.setBalance(request.getInitialBalance());
         return accountService.createAccountWithUserAndType(userPublicId, accountTypePublicIdentifier, account);
     }
 
