@@ -12,6 +12,8 @@ public class TransactionRequestForTransfer {
     @NotBlank
     private String targetAccountNumber;
 
+    private String description;
+
 
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
@@ -19,4 +21,11 @@ public class TransactionRequestForTransfer {
     public String getTargetAccountNumber() { return targetAccountNumber; }
     public void setTargetAccountNumber(String targetAccountNumber) { this.targetAccountNumber = targetAccountNumber; }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

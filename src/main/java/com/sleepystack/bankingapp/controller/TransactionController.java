@@ -1,7 +1,11 @@
 package com.sleepystack.bankingapp.controller;
 
+import com.sleepystack.bankingapp.dto.TransactionRequestForDeposit;
+import com.sleepystack.bankingapp.dto.TransactionRequestForTransfer;
+import com.sleepystack.bankingapp.dto.TransactionRequestForWithdrawal;
 import com.sleepystack.bankingapp.model.Transaction;
 import com.sleepystack.bankingapp.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,29 +25,29 @@ public class TransactionController {
     public Transaction deposit(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
-            @RequestParam double amount,
-            @RequestParam(required = false) String description) {
-        return transactionService.deposit(userPublicId, accountNumber, amount, description);
+            @RequestBody @Valid TransactionRequestForDeposit request) {
+        // For deposit, ignore targetAccountNumber field in request
+        return transactionService.deposit(userPublicId, accountNumber, request.getAmount(), request.getDescription());
     }
 
     @PostMapping("/withdraw")
     public Transaction withdraw(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
-            @RequestParam double amount,
-            @RequestParam(required = false) String description) {
-        return transactionService.withdrawal(userPublicId, accountNumber, amount, description);
+            @RequestBody @Valid TransactionRequestForWithdrawal request) {
+        // For withdrawal, ignore targetAccountNumber field in request
+        return transactionService.withdrawal(userPublicId, accountNumber, request.getAmount(), request.getDescription());
     }
 
     @PostMapping("/transfer")
     public Transaction transfer(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber, // source account
-            @RequestParam String targetAccountNumber, // destination account
-            @RequestParam double amount,
-            @RequestParam(required = false) String description) {
-        return transactionService.transfer(userPublicId, accountNumber, targetAccountNumber, amount, description);
+            @RequestBody @Valid TransactionRequestForTransfer request) {
+        // For transfer, require targetAccountNumber in request
+        return transactionService.transfer(userPublicId, accountNumber, request.getTargetAccountNumber(), request.getAmount(), request.getDescription());
     }
+
     @GetMapping
     public List<Transaction> getTransactions(
             @PathVariable String userPublicId,
