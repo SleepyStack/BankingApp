@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class TransactionRequest {
+public class TransactionRequestForTransfer {
     @NotNull(message = "Amount is required")
     @Min(value = 1, message = "Amount must be greater than zero")
     private Double amount;
@@ -12,7 +12,6 @@ public class TransactionRequest {
     @NotBlank
     private String targetAccountNumber;
 
-    private String description;
 
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
@@ -20,6 +19,4 @@ public class TransactionRequest {
     public String getTargetAccountNumber() { return targetAccountNumber; }
     public void setTargetAccountNumber(String targetAccountNumber) { this.targetAccountNumber = targetAccountNumber; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 }
