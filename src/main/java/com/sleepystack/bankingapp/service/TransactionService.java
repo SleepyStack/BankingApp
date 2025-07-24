@@ -2,8 +2,10 @@ package com.sleepystack.bankingapp.service;
 
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.model.Transaction;
+import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.TransactionRepository;
+import com.sleepystack.bankingapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +16,20 @@ import java.util.List;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
-//TODO add validation for userPublicId to ensure the user owns the account
+    private final UserRepository userRepository;
+
+    //TODO add validation for userPublicId to ensure the user owns the account
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+    public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository, UserRepository userRepository) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
     }
     public Transaction deposit(String userPublicId, String accountNumber, double amount, String description) {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        User user = userRepository.findByPublicIdentifier(userPublicId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
         if(amount <= 0){
             throw new IllegalArgumentException("Deposit amount must be greater than zero");
         }
@@ -36,8 +43,10 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
     public Transaction withdrawal(String userPublicId, String accountNumber, double amount, String description){
-        Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        User user = userRepository.findByPublicIdentifier(userPublicId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
         if(amount <= 0){
             throw new IllegalArgumentException("Withdrawal amount must be greater than zero");
         }
@@ -49,13 +58,15 @@ public class TransactionService {
         String finalDescription = (description != null && !description.trim().isEmpty())
                 ? description
                 : String.format("Withdrawal of $%.2f from Account %s by User %s.", amount, accountNumber, account.getUserId());
-        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"withdraw",amount, Instant.now(),
+        Transaction transaction = new Transaction(null,account.getId(), accountNumber,"withdrawal",amount, Instant.now(),
                 null, null,"Completed", account.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
     }
     public Transaction transfer(String userPublicId,String accountNumber,String targetAccountNumber,double amount, String description) {
-        Account fromAccount = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        User user = userRepository.findByPublicIdentifier(userPublicId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Account fromAccount = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
         Account toAccount = accountRepository.findByAccountNumber(targetAccountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Target account not found"));
         if (amount <= 0) {
