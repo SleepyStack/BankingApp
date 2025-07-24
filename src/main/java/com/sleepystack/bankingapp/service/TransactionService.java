@@ -30,9 +30,6 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
-        if(amount <= 0){
-            throw new IllegalArgumentException("Deposit amount must be greater than zero");
-        }
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
         String finalDescription = (description != null && !description.trim().isEmpty())
@@ -47,9 +44,6 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
-        if(amount <= 0){
-            throw new IllegalArgumentException("Withdrawal amount must be greater than zero");
-        }
         if(account.getBalance() < amount){
             throw new IllegalArgumentException("Insufficient funds for withdrawal");
         }
@@ -69,9 +63,6 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
         Account toAccount = accountRepository.findByAccountNumber(targetAccountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Target account not found"));
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Transfer amount must be greater than zero");
-        }
         if (fromAccount.getBalance() < amount) {
             throw new IllegalArgumentException("Insufficient funds for transfer");
         }
