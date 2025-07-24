@@ -38,11 +38,6 @@ public class AccountController {
         return accountService.getByUserPublicIdAndAccountNumber(userPublicId, accountNumber);
     }
 
-    @PutMapping("/{accountNumber}")
-    public Account updateAccount(@PathVariable String userPublicId, @PathVariable String accountNumber, @RequestBody Account account) {
-        return accountService.updateAccountForUser(userPublicId, accountNumber, account);
-    }
-
     @DeleteMapping("/{accountNumber}")
     public void deleteAccount(@PathVariable String accountNumber){
         accountService.deleteAccountByAccountNumber(accountNumber);

@@ -56,15 +56,6 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found for this user"));
     }
 
-    public Account updateAccountForUser(String userPublicId, String accountNumber, Account updatedAccount) {
-        User user = userRepository.findByPublicIdentifier(userPublicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Account existingAccount = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
-                .orElseThrow(() -> new RuntimeException("Account not found for this user"));
-        existingAccount.setBalance(updatedAccount.getBalance());
-        return accountRepository.save(existingAccount);
-    }
-
     public void deleteAccountByAccountNumber(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
