@@ -94,8 +94,4 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
         return transactionRepository.findByAccountNumberOrderByTimestampDesc(accountNumber);
     }
-
-    public List<Transaction> getTransactionsForUser(String userId) {
-        return transactionRepository.findByInitiatedByUserIdOrderByTimestampDesc(userId);
-    }
 }
