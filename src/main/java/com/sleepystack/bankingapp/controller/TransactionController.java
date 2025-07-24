@@ -26,7 +26,6 @@ public class TransactionController {
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
             @RequestBody @Valid TransactionRequestForDeposit request) {
-        // For deposit, ignore targetAccountNumber field in request
         return transactionService.deposit(userPublicId, accountNumber, request.getAmount(), request.getDescription());
     }
 
@@ -35,7 +34,6 @@ public class TransactionController {
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
             @RequestBody @Valid TransactionRequestForWithdrawal request) {
-        // For withdrawal, ignore targetAccountNumber field in request
         return transactionService.withdrawal(userPublicId, accountNumber, request.getAmount(), request.getDescription());
     }
 
@@ -44,7 +42,6 @@ public class TransactionController {
             @PathVariable String userPublicId,
             @PathVariable String accountNumber, // source account
             @RequestBody @Valid TransactionRequestForTransfer request) {
-        // For transfer, require targetAccountNumber in request
         return transactionService.transfer(userPublicId, accountNumber, request.getTargetAccountNumber(), request.getAmount(), request.getDescription());
     }
 
