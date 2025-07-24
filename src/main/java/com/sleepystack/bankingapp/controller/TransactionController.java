@@ -48,6 +48,6 @@ public class TransactionController {
     public List<Transaction> getTransactions(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber) {
-        return transactionService.getTransactionsForAccount(accountNumber);
+        return transactionService.getTransactionsForAccount(userPublicId, accountNumber);
     }
 }

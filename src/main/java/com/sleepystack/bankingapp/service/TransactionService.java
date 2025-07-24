@@ -87,7 +87,11 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getTransactionsForAccount(String accountNumber) {
+    public List<Transaction> getTransactionsForAccount(String userPublicId, String accountNumber) {
+        User user = userRepository.findByPublicIdentifier(userPublicId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Account not found for this user"));
         return transactionRepository.findByAccountNumberOrderByTimestampDesc(accountNumber);
     }
 
