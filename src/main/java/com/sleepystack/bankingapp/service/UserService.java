@@ -48,9 +48,7 @@ public class UserService {
         User user = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         List<Account> accounts = accountRepository.findAllByUserId(user.getId());
-        for (Account account : accounts) {
-            accountRepository.deleteById(account.getId());
-        }
+        accountRepository.deleteAll(accounts);
         userRepository.deleteById(user.getId());
     }
 }
