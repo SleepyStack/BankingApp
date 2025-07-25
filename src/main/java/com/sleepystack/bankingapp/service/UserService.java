@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.util.UserIdGenerator;
@@ -23,20 +24,20 @@ public class UserService {
     }
     public User getUserByPublicId(String publicId) {
         return userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
     public User updateUserByPublicId(String publicId, User updatedUser){
         User user = userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         updatedUser.setId(user.getId());
         return userRepository.save(updatedUser);
     }
     public void deleteUserByPublicId(String publicId){
         User user = userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         userRepository.deleteById(user.getId());
     }
 }
