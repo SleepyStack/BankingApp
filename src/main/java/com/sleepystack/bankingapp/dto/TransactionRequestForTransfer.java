@@ -3,6 +3,11 @@ package com.sleepystack.bankingapp.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 
 public class TransactionRequestForTransfer {
     @NotNull(message = "Amount is required")
@@ -13,18 +18,4 @@ public class TransactionRequestForTransfer {
     private String targetAccountNumber;
 
     private String description;
-
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
-
-    public String getTargetAccountNumber() { return targetAccountNumber; }
-    public void setTargetAccountNumber(String targetAccountNumber) { this.targetAccountNumber = targetAccountNumber; }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
