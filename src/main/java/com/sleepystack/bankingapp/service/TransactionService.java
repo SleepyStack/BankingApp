@@ -10,6 +10,7 @@ import com.sleepystack.bankingapp.repository.TransactionRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -57,6 +58,8 @@ public class TransactionService {
                 null, null,"Completed", account.getUserId(), finalDescription);
         return transactionRepository.save(transaction);
     }
+
+    @Transactional
     public Transaction transfer(String userPublicId,String accountNumber,String targetAccountNumber,double amount, String description) {
         User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
