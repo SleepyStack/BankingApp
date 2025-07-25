@@ -29,5 +29,4 @@ public class Transaction {
     private String status;
     private String initiatedByUserId;
     private String description;
-
 }

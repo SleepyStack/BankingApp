@@ -21,7 +21,6 @@ public class Account {
     private String accountNumber;
     private String accountTypeId;
     private double balance;
-
 }
 
 
