@@ -1,9 +1,19 @@
 package com.sleepystack.bankingapp.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+
 public class User {
     @Id
     private String id;
@@ -12,47 +22,5 @@ public class User {
     private String name;
     private String email;
     private String phone;
-
-    public User() {} // Default constructor required by Spring Data
-
-    public User(String id, String publicIdentifier, String name, String email, String phone) {
-        this.id = id;
-        this.publicIdentifier = publicIdentifier;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-    }
-
-    public String getId(){
-        return this.id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getName() {
-        return this.name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getEmail() {
-        return this.email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPhone() {
-        return this.phone;
-    }
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getPublicIdentifier() {
-        return publicIdentifier;
-    }
-
-    public void setPublicIdentifier(String publicIdentifier) {
-        this.publicIdentifier = publicIdentifier;
-    }
+    
 }
