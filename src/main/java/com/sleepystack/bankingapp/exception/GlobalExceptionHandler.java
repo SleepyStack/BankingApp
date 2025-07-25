@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<?> handleDuplicateResource(DuplicateResourceException ex) {
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<?> handleDuplicateResource(DuplicateKeyException ex) {
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 

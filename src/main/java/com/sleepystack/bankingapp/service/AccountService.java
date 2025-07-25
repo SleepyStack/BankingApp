@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.model.User;
@@ -34,14 +35,24 @@ public class AccountService {
         AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicIdentifier)
                 .orElseThrow(() -> new ResourceNotFoundException("Account type not found"));
 
-        String accountNumber;
-        do {
-            accountNumber = AccountNumberGenerator.generateAccountNumber();
-        } while (accountRepository.existsByAccountNumber(accountNumber));
-        account.setUserId(user.getId());
-        account.setAccountTypeId(accountType.getId());
-        account.setAccountNumber(accountNumber);
-        return accountRepository.save(account);
+        int maxTries = 5;
+        for (int attempt = 1; attempt <= maxTries; attempt++) {
+            String accountNumber;
+            do {
+                accountNumber = AccountNumberGenerator.generateAccountNumber();
+            } while (accountRepository.existsByAccountNumber(accountNumber));
+            account.setUserId(user.getId());
+            account.setAccountTypeId(accountType.getId());
+            account.setAccountNumber(accountNumber);
+            try {
+                return accountRepository.save(account);
+            } catch (DuplicateKeyException e) {
+                if (attempt == maxTries) {
+                    throw new DuplicateKeyException("Failed to create account after " + maxTries + " attempts due to duplicate account numbers.");
+                }
+            }
+        }
+        throw new IllegalStateException("Unable to create account after retries"); // Should never reach here
     }
 
     public List<Account> findAllByUserPublicId(String userPublicId) {
