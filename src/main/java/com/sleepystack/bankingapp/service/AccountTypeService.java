@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.AccountType;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +27,19 @@ public class AccountTypeService {
 
     public AccountType getAccountTypeById(String id) {
         return accountTypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account type not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account type not found"));
     }
 
     public AccountType updateAccountType(String id, AccountType updatedType) {
         AccountType existingType = accountTypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account type not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account type not found"));
         updatedType.setId(id);
         return accountTypeRepository.save(updatedType);
     }
 
     public void deleteAccountType(String id) {
         AccountType existingType = accountTypeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account type not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account type not found"));
         accountTypeRepository.deleteById(id);
     }
 }

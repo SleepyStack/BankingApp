@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.model.AccountType;
@@ -29,10 +30,10 @@ public class AccountService {
 
     public Account createAccountWithUserAndType(String userPublicId, String accountTypePublicIdentifier, Account account) {
         User user = userRepository.findByPublicIdentifier(userPublicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicIdentifier)
-                .orElseThrow(() -> new RuntimeException("Account type not found"));
-        // Generate unique account number
+                .orElseThrow(() -> new ResourceNotFoundException("Account type not found"));
+
         String accountNumber;
         do {
             accountNumber = AccountNumberGenerator.generateAccountNumber();
@@ -45,20 +46,20 @@ public class AccountService {
 
     public List<Account> findAllByUserPublicId(String userPublicId) {
         User user = userRepository.findByPublicIdentifier(userPublicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return accountRepository.findAllByUserId(user.getId());
     }
 
     public Account getByUserPublicIdAndAccountNumber(String userPublicId, String accountNumber) {
         User user = userRepository.findByPublicIdentifier(userPublicId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
-                .orElseThrow(() -> new RuntimeException("Account not found for this user"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found for user"));
     }
 
     public void deleteAccountByAccountNumber(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         accountRepository.deleteById(account.getId());
     }
 }
