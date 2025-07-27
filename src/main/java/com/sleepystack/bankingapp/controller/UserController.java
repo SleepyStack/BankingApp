@@ -26,6 +26,7 @@ public class UserController {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
+        user.setPassword(request.getPassword());
         return userService.createUser(user);
     }
     @GetMapping("/{publicId}")
@@ -47,6 +48,9 @@ public class UserController {
         }
         if (request.getPhone() != null) {
             user.setPhone(request.getPhone());
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(request.getPassword());
         }
         return userService.updateUserByPublicId(publicId, user);
     }
