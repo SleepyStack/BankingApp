@@ -33,23 +33,32 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
     public User getUserByPublicId(String publicId) {
         return userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
-    public List<User> getAllUsers(){
+
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-    public User updateUserByPublicId(String publicId, User updatedUser){
-        User user = userRepository.findByPublicIdentifier(publicId)
+
+    public User updateUserByPublicId(String publicId, User updatedUser) {
+        User existingUser = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        updatedUser.setId(user.getId());
+        updatedUser.setId(existingUser.getId());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            if (!updatedUser.getPassword().equals(existingUser.getPassword())) {
+                updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+        } else {
+            updatedUser.setPassword(existingUser.getPassword());
+        }
         return userRepository.save(updatedUser);
     }
 
     @Transactional
-    public void deleteUserByPublicId(String publicId){
-
+    public void deleteUserByPublicId(String publicId) {
         User user = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         List<Account> accounts = accountRepository.findAllByUserId(user.getId());
