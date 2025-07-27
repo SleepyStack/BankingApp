@@ -25,6 +25,9 @@ public class Account {
 
     private String accountTypeId;
     private double balance;
+    private String status;
+    private String createdAt;
+    private String updatedAt;
 }
 
 

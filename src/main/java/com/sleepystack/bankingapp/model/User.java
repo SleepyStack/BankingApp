@@ -25,4 +25,11 @@ public class User {
     private String name;
     private String email;
     private String phone;
+    private String password;
+    private String role;
+    private String status;
+    private String lastLoginTime;
+    private int loginAttempts;
+    private String createdAt;
+    private String updatedAt;
 }
