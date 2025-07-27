@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 
 @Document(collection = "users")
 
@@ -30,7 +31,7 @@ public class User {
     private String email;
     private String phone;
     private String password;
-    private String role;
+    private List<String> roles;
     private String status;
     private String lastLoginTime;
     private int loginAttempts;
