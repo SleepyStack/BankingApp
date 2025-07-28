@@ -31,6 +31,9 @@ public class UserService {
         String publicId = UserIdGenerator.generateUserId();
         user.setPublicIdentifier(publicId);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(List.of("ROLE_USER")); // Default role
+        }
         return userRepository.save(user);
     }
 
