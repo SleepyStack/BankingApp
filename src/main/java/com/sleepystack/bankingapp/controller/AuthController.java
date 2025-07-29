@@ -6,22 +6,30 @@ import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
     @Autowired
-    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
     @PostMapping("/register")
-    public User createUser(@RequestBody @Valid CreateUserRequest request){
+    public User register(@RequestBody @Valid CreateUserRequest request){
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -30,13 +38,18 @@ public class AuthController {
         return userService.createUser(user);
     }
     @PostMapping("/login")
-    public String login(@RequestBody @Valid LoginRequest request) {
-        User user = userService.getUserByEmail(request.getEmail());
-        if (user != null && passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-
-            return "Login successful for user: " + user.getName();
-        } else {
-            return "Invalid email or password";
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+            if (authentication.isAuthenticated()) {
+                // Successful authentication
+                // return JWT token
+                }
+        } catch (AuthenticationException e) {
+            // Invalid credentials
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
     }
 }
