@@ -20,15 +20,7 @@ public class UserController {
     public UserController(UserService userService){
         this.userService = userService;
     }
-    @PostMapping
-    public User createUser(@RequestBody @Valid CreateUserRequest request){
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
-        return userService.createUser(user);
-    }
+
     @GetMapping("/{publicId}")
     public User getUser(@PathVariable String publicId){
         return userService.getUserByPublicId(publicId);

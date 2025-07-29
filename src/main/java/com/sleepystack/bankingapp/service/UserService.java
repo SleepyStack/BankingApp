@@ -6,6 +6,8 @@ import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.util.UserIdGenerator;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -68,5 +70,10 @@ public class UserService {
         List<Account> accounts = accountRepository.findAllByUserId(user.getId());
         accountRepository.deleteAll(accounts);
         userRepository.deleteById(user.getId());
+    }
+
+    public User getUserByEmail(@Email(message = "Invalid email address") @NotBlank(message = "Email is required") String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
 }
