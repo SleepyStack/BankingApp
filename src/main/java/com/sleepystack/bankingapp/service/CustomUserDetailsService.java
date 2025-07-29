@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -26,7 +27,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> userOpt = userRepository.findByEmail(email);
         User user = userOpt.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        String role = user.getRole() != null ? user.getRole().toUpperCase() : "USER";
+        String role = user.getRoles()
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList())!= null ? user.getRoles().add("USER");
         if (!role.startsWith("ROLE_")) {
             role = "ROLE_" + role;
         }
