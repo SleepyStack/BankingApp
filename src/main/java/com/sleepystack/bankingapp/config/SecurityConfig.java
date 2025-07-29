@@ -4,6 +4,7 @@ import com.sleepystack.bankingapp.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -37,7 +38,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/register", "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/register").permitAll()
+                        .requestMatchers("/", "/auth/login").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults())
                 .sessionManagement(session ->
