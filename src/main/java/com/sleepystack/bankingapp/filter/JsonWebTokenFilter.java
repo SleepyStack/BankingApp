@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JsonWebTokenFilter extends OncePerRequestFilter {
     private final JsonWebTokenService jsonWebTokenService;
     private final UserService userService;
@@ -37,10 +39,10 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
             jwtToken = AuthorizationHeader.substring(7);
             try {
                 userEmail = jsonWebTokenService.extractEmailFromToken(jwtToken);
+                log.debug("JWT parsed for email: {}", userEmail);
             } catch (Exception e) {
-                // Handle token parsing error
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                return;
+                log.warn("Invalid JWT token: {}", e.getMessage());
+                throw new JwtAuthenticationException("Invalid JWT token", e);
             }
         }
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -50,6 +52,7 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken(user, null, userService.getAuthorities(user.getPublicIdentifier()));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
+                log.warn("JWT token validation failed for email: {}", userEmail);
                 throw new JwtAuthenticationException("Invalid JWT token");
             }
         } else {
