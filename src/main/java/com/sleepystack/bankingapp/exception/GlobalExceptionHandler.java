@@ -37,6 +37,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
+    @ExceptionHandler(JwtAuthenticationException.class)
+    public ResponseEntity<?> handleJwtAuthentication(JwtAuthenticationException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
     // Fallback for all other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAllOther(Exception ex) {
