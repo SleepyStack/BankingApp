@@ -8,6 +8,7 @@ import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.util.UserIdGenerator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -32,7 +34,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     public User createUser(User user) {
         String publicId = UserIdGenerator.generateUserId();
         user.setPublicIdentifier(publicId);
@@ -40,21 +41,33 @@ public class UserService {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(new ArrayList<>(List.of("ROLE_USER"))); // Default role
         }
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        log.info("Created user [{}] with email [{}]", saved.getPublicIdentifier(), saved.getEmail());
+        return saved;
     }
 
     public User getUserByPublicId(String publicId) {
-        return userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = userRepository.findByPublicIdentifier(publicId)
+                .orElseThrow(() -> {
+                    log.warn("User not found for publicId: {}", publicId);
+                    return new ResourceNotFoundException("User not found");
+                });
+        log.info("Fetched user [{}] with email [{}]", publicId, user.getEmail());
+        return user;
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        log.info("Fetched all users, count: {}", users.size());
+        return users;
     }
 
     public User updateUserByPublicId(String publicId, User updatedUser) {
         User existingUser = userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("User not found for update, publicId: {}", publicId);
+                    return new ResourceNotFoundException("User not found");
+                });
         updatedUser.setId(existingUser.getId());
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             if (!updatedUser.getPassword().equals(existingUser.getPassword())) {
@@ -63,26 +76,40 @@ public class UserService {
         } else {
             updatedUser.setPassword(existingUser.getPassword());
         }
-        return userRepository.save(updatedUser);
+        User saved = userRepository.save(updatedUser);
+        log.info("Updated user [{}] with email [{}]", publicId, saved.getEmail());
+        return saved;
     }
 
     @Transactional
     public void deleteUserByPublicId(String publicId) {
         User user = userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("User not found for deletion, publicId: {}", publicId);
+                    return new ResourceNotFoundException("User not found");
+                });
         List<Account> accounts = accountRepository.findAllByUserId(user.getId());
         accountRepository.deleteAll(accounts);
         userRepository.deleteById(user.getId());
+        log.info("Deleted user [{}] and all their accounts", publicId);
     }
 
     public User getUserByEmail(@Email(message = "Invalid email address") @NotBlank(message = "Email is required") String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.warn("User not found for email: {}", email);
+                    return new ResourceNotFoundException("User not found with email: " + email);
+                });
+        log.info("Fetched user [{}] with email [{}]", user.getPublicIdentifier(), email);
+        return user;
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities(String publicId) {
         User user = userRepository.findByPublicIdentifier(publicId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with publicId: " + publicId));
+                .orElseThrow(() -> {
+                    log.warn("User not found for authorities, publicId: {}", publicId);
+                    return new ResourceNotFoundException("User not found with publicId: " + publicId);
+                });
         return user.getRoles().stream()
                 .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure "ROLE_" prefix
                 .map(SimpleGrantedAuthority::new)
