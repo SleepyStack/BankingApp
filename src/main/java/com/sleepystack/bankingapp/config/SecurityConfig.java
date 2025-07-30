@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.config;
 
+import com.sleepystack.bankingapp.filter.JsonWebTokenFilter;
 import com.sleepystack.bankingapp.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,10 +24,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
+    private final JsonWebTokenFilter jsonWebTokenFilter;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JsonWebTokenFilter jsonWebTokenFilter) {
         this.customUserDetailsService = userDetailsService;
+        this.jsonWebTokenFilter = jsonWebTokenFilter;
     }
 
     @Bean
@@ -45,7 +48,7 @@ public class SecurityConfig {
                 .httpBasic(withDefaults())
                 .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jsonWebTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
