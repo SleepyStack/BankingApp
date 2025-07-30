@@ -25,17 +25,15 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
     private final JsonWebTokenFilter jsonWebTokenFilter;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JsonWebTokenFilter jsonWebTokenFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JsonWebTokenFilter jsonWebTokenFilter, PasswordEncoder passwordEncoder) {
         this.customUserDetailsService = userDetailsService;
         this.jsonWebTokenFilter = jsonWebTokenFilter;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new Argon2PasswordEncoder(16, 32, 1, 65536, 3);
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
