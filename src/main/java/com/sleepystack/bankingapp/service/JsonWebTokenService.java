@@ -1,6 +1,7 @@
 package com.sleepystack.bankingapp.service;
 
 import com.sleepystack.bankingapp.util.JsonWebTokenSigningKey;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,10 @@ public class JsonWebTokenService {
                     .getPayload()
                     .getSubject();
             return tokenEmail.equals(userEmail);
+        }catch (ExpiredJwtException e){
+          return false;
         } catch (Exception e) {
-            return false; // Token is invalid
+            return false;
         }
     }
 
