@@ -17,6 +17,21 @@ public class JsonWebTokenService {
     public JsonWebTokenService(JsonWebTokenSigningKey jsonWebTokenSigningKey) {
         this.jsonWebTokenSigningKey = jsonWebTokenSigningKey;
     }
+
+    public boolean validateToken(String jwtToken, String userEmail) {
+        try {
+            String tokenEmail = Jwts.parser()
+                    .verifyWith(jsonWebTokenSigningKey.getSecretKey())
+                    .build()
+                    .parseClaimsJws(jwtToken)
+                    .getPayload()
+                    .getSubject();
+            return tokenEmail.equals(userEmail);
+        } catch (Exception e) {
+            return false; // Token is invalid
+        }
+    }
+
     public String generateToken(String subject) {
         Map<String, Object> claims = new HashMap<String, Object>();
         return Jwts.builder()

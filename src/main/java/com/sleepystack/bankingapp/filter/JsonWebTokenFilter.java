@@ -2,11 +2,14 @@ package com.sleepystack.bankingapp.filter;
 
 
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
+import com.sleepystack.bankingapp.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,10 +18,12 @@ import java.io.IOException;
 @Component
 public class JsonWebTokenFilter extends OncePerRequestFilter {
     private final JsonWebTokenService jsonWebTokenService;
+    private final UserService userService;
 
     @Autowired
-    public JsonWebTokenFilter(JsonWebTokenService jsonWebTokenService) {
+    public JsonWebTokenFilter(JsonWebTokenService jsonWebTokenService, UserService userService) {
         this.jsonWebTokenService = jsonWebTokenService;
+        this.userService = userService;
     }
 
     @Override
@@ -35,6 +40,18 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 return;
             }
+        }
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if(jsonWebTokenService.validateToken(jwtToken, userEmail)) {
+
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new
+                        UsernamePasswordAuthenticationToken(userService.getUserByEmail(userEmail), null, );
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+                return;
+            }
+        } else {
+            request.setAttribute("userEmail", "anonymous");
         }
     }
 }

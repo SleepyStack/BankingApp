@@ -9,11 +9,14 @@ import com.sleepystack.bankingapp.util.UserIdGenerator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -75,5 +78,14 @@ public class UserService {
     public User getUserByEmail(@Email(message = "Invalid email address") @NotBlank(message = "Email is required") String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities(String publicId) {
+        User user = userRepository.findByPublicIdentifier(publicId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with publicId: " + publicId));
+        return user.getRoles().stream()
+                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure "ROLE_" prefix
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 }
