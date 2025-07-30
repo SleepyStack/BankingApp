@@ -5,6 +5,7 @@ import com.sleepystack.bankingapp.dto.UpdateUserRequest;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -48,6 +50,7 @@ public class UserController {
     }
     @DeleteMapping("/{publicId}")
     public void deleteUser(@PathVariable String publicId){
+        log.info("Deleting user with public ID: {}", publicId);
         userService.deleteUserByPublicId(publicId);
     }
 }
