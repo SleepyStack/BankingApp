@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/users/{userPublicId}/accounts")
+@Slf4j
 public class AccountController {
     private final AccountService accountService;
 
@@ -19,13 +21,13 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    // Create new account for user & account type
     @PostMapping("/{accountTypePublicIdentifier}")
     public Account createAccount(@PathVariable String userPublicId,
                                  @PathVariable String accountTypePublicIdentifier,
                                  @RequestBody @Valid CreateAccountRequest request) {
         Account account = new Account();
         account.setBalance(request.getInitialBalance());
+        log.info("Creating account for user: {}, with type: {} having initial balance: {}", userPublicId, accountTypePublicIdentifier, request.getInitialBalance());
         return accountService.createAccountWithUserAndType(userPublicId, accountTypePublicIdentifier, account);
     }
 
@@ -44,6 +46,7 @@ public class AccountController {
 
     @DeleteMapping("/{accountNumber}")
     public void deleteAccount(@PathVariable String accountNumber){
+        log.info("Deleting account with account number: {}", accountNumber);
         accountService.deleteAccountByAccountNumber(accountNumber);
     }
 }
