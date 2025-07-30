@@ -1,6 +1,7 @@
 package com.sleepystack.bankingapp.filter;
 
 
+import com.sleepystack.bankingapp.exception.JwtAuthenticationException;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
@@ -49,8 +50,7 @@ public class JsonWebTokenFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken(user, null, userService.getAuthorities(user.getPublicIdentifier()));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-                return;
+                throw new JwtAuthenticationException("Invalid JWT token");
             }
         } else {
             request.setAttribute("userEmail", "anonymous");
