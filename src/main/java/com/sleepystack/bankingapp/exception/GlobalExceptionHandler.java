@@ -40,7 +40,6 @@ public class GlobalExceptionHandler {
     // Fallback for all other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAllOther(Exception ex) {
-        ex.printStackTrace();
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
