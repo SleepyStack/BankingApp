@@ -9,11 +9,13 @@ import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
 import com.sleepystack.bankingapp.util.AccountNumberGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AccountService {
     private final AccountRepository accountRepository;
@@ -45,32 +47,45 @@ public class AccountService {
             account.setAccountTypeId(accountType.getId());
             account.setAccountNumber(accountNumber);
             try {
-                return accountRepository.save(account);
+                Account saved = accountRepository.save(account);
+                log.info("Created new account [{}] for user [{}] with type [{}]", accountNumber, userPublicId, accountTypePublicIdentifier);
+                return saved;
             } catch (DuplicateKeyException e) {
+                log.warn("Duplicate account number [{}] generated for user [{}], attempt {}/{}", accountNumber, userPublicId, attempt, maxTries);
                 if (attempt == maxTries) {
+                    log.error("Failed to create account after {} attempts for user [{}]", maxTries, userPublicId);
                     throw new DuplicateKeyException("Failed to create account after " + maxTries + " attempts due to duplicate account numbers.");
                 }
+            } catch (Exception e) {
+                log.error("Unexpected error while creating account for user [{}]: {}", userPublicId, e.getMessage(), e);
+                throw e;
             }
         }
-        throw new IllegalStateException("Unable to create account after retries"); // Should never reach here
+        log.error("Unable to create account after retries for user [{}]", userPublicId);
+        throw new IllegalStateException("Unable to create account after retries");
     }
 
     public List<Account> findAllByUserPublicId(String userPublicId) {
         User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return accountRepository.findAllByUserId(user.getId());
+        List<Account> accounts = accountRepository.findAllByUserId(user.getId());
+        log.info("Fetched {} accounts for user [{}]", accounts.size(), userPublicId);
+        return accounts;
     }
 
     public Account getByUserPublicIdAndAccountNumber(String userPublicId, String accountNumber) {
         User user = userRepository.findByPublicIdentifier(userPublicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found for user"));
+        log.info("Fetched account [{}] for user [{}]", accountNumber, userPublicId);
+        return account;
     }
 
     public void deleteAccountByAccountNumber(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         accountRepository.deleteById(account.getId());
+        log.info("Deleted account [{}]", accountNumber);
     }
 }
