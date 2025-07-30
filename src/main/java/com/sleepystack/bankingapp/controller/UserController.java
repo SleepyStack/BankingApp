@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
@@ -25,14 +24,23 @@ public class UserController {
 
     @GetMapping("/{publicId}")
     public User getUser(@PathVariable String publicId){
-        return userService.getUserByPublicId(publicId);
+        log.info("Request to fetch user with public ID: {}", publicId);
+        User user = userService.getUserByPublicId(publicId);
+        log.info("Fetched user with public ID: {}", publicId);
+        return user;
     }
+
     @GetMapping
     public List<User> getAllUsers(){
-        return userService.getAllUsers();
+        log.info("Request to fetch all users");
+        List<User> users = userService.getAllUsers();
+        log.info("Fetched {} users", users.size());
+        return users;
     }
+
     @PutMapping("/{publicId}")
     public User updateUser(@PathVariable String publicId, @RequestBody UpdateUserRequest request){
+        log.info("Request to update user with public ID: {}", publicId);
         User user = userService.getUserByPublicId(publicId);
         if (request.getName() != null) {
             user.setName(request.getName());
@@ -46,11 +54,15 @@ public class UserController {
         if (request.getPassword() != null) {
             user.setPassword(request.getPassword());
         }
-        return userService.updateUserByPublicId(publicId, user);
+        User updated = userService.updateUserByPublicId(publicId, user);
+        log.info("Updated user with public ID: {}", publicId);
+        return updated;
     }
+
     @DeleteMapping("/{publicId}")
     public void deleteUser(@PathVariable String publicId){
-        log.info("Deleting user with public ID: {}", publicId);
+        log.info("Request to delete user with public ID: {}", publicId);
         userService.deleteUserByPublicId(publicId);
+        log.info("Deleted user with public ID: {}", publicId);
     }
 }
