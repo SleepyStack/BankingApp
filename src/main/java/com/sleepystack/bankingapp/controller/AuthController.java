@@ -8,8 +8,6 @@ import com.sleepystack.bankingapp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,18 +28,23 @@ public class AuthController {
         this.jsonWebTokenService = jsonWebTokenService;
         this.authenticationManager = authenticationManager;
     }
+
     @PostMapping("/register")
     public User register(@RequestBody @Valid CreateUserRequest request){
+        log.info("Request to register user with email: {}", request.getEmail());
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPassword(request.getPassword());
-        log.info("Registering user with email: {}", request.getEmail());
-        return userService.createUser(user);
+        User created = userService.createUser(user);
+        log.info("Registered user with email: {}", created.getEmail());
+        return created;
     }
+
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest request) {
+        log.info("Login attempt for email: {}", request.getEmail());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -49,7 +52,7 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 log.info("User {} logged in successfully", request.getEmail());
                 return jsonWebTokenService.generateToken(request.getEmail());
-                }
+            }
         } catch (AuthenticationException e) {
             log.warn("Failed login attempt for email '{}': {}", request.getEmail(), e.getMessage());
         }
