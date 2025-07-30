@@ -29,4 +29,16 @@ public class JsonWebTokenService {
                 .signWith(jsonWebTokenSigningKey.getSecretKey())
                 .compact();
     }
+    public String extractEmailFromToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(jsonWebTokenSigningKey.getSecretKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getPayload()
+                    .getSubject();
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid JWT token", e);
+        }
+    }
 }
