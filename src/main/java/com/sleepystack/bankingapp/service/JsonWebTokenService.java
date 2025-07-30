@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.exception.JwtAuthenticationException;
 import com.sleepystack.bankingapp.util.JsonWebTokenSigningKey;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -28,25 +29,13 @@ public class JsonWebTokenService {
                     .getPayload()
                     .getSubject();
             return tokenEmail.equals(userEmail);
-        }catch (ExpiredJwtException e){
-          return false;
+        } catch (ExpiredJwtException e) {
+            throw new JwtAuthenticationException("JWT token has expired", e);
         } catch (Exception e) {
-            return false;
+            throw new JwtAuthenticationException("Invalid JWT token", e);
         }
     }
 
-    public String generateToken(String subject) {
-        Map<String, Object> claims = new HashMap<String, Object>();
-        return Jwts.builder()
-                .claims()
-                    .add(claims)
-                    .subject(subject)
-                    .issuedAt(new Date())
-                    .expiration(new Date(System.currentTimeMillis() + jsonWebTokenSigningKey.getExpirationTime()))
-                    .and()
-                .signWith(jsonWebTokenSigningKey.getSecretKey())
-                .compact();
-    }
     public String extractEmailFromToken(String token) {
         try {
             return Jwts.parser()
@@ -55,8 +44,20 @@ public class JsonWebTokenService {
                     .parseClaimsJws(token)
                     .getPayload()
                     .getSubject();
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid JWT token", e);
+        } catch (Exception e) {
+            throw new JwtAuthenticationException("Invalid JWT token", e);
         }
+    }
+    public String generateToken(String subject) {
+        Map<String, Object> claims = new HashMap<String, Object>();
+        return Jwts.builder()
+                .claims()
+                .add(claims)
+                .subject(subject)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jsonWebTokenSigningKey.getExpirationTime()))
+                .and()
+                .signWith(jsonWebTokenSigningKey.getSecretKey())
+                .compact();
     }
 }
