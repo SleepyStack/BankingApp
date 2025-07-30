@@ -41,12 +41,15 @@ public class AccountController {
     @GetMapping("/{accountNumber}")
     public Account getAccount(@PathVariable String userPublicId,
                               @PathVariable String accountNumber) {
-        return accountService.getByUserPublicIdAndAccountNumber(userPublicId, accountNumber);
+        Account account = accountService.getByUserPublicIdAndAccountNumber(userPublicId, accountNumber);
+        log.info("Fetching account for user: {}, with account number: {}", userPublicId, accountNumber);
+        return account;
+
     }
 
     @DeleteMapping("/{accountNumber}")
     public void deleteAccount(@PathVariable String accountNumber){
-        log.info("Deleting account with account number: {}", accountNumber);
         accountService.deleteAccountByAccountNumber(accountNumber);
+        log.info("Deleting account with account number: {}", accountNumber);
     }
 }
