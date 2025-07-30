@@ -6,6 +6,7 @@ import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
     private final UserService userService;
     private final JsonWebTokenService jsonWebTokenService;
@@ -35,6 +37,7 @@ public class AuthController {
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPassword(request.getPassword());
+        log.info("Registering user with email: {}", request.getEmail());
         return userService.createUser(user);
     }
     @PostMapping("/login")
@@ -44,10 +47,11 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             if (authentication.isAuthenticated()) {
+                log.info("User {} logged in successfully", request.getEmail());
                 return jsonWebTokenService.generateToken(request.getEmail());
                 }
         } catch (AuthenticationException e) {
-            // Invalid credentials
+            log.warn("Failed login attempt for email '{}': {}", request.getEmail(), e.getMessage());
         }
         return ("Invalid email or password");
     }
