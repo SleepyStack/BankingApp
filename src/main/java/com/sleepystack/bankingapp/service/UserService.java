@@ -20,15 +20,15 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, AccountRepository accountRepository) {
+    public UserService(UserRepository userRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     public User createUser(User user) {
         String publicId = UserIdGenerator.generateUserId();

@@ -41,8 +41,7 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             if (authentication.isAuthenticated()) {
-                // Successful authentication
-                // return JWT token
+                return generateToken();
                 }
         } catch (AuthenticationException e) {
             // Invalid credentials
