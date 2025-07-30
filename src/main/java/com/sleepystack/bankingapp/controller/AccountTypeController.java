@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-
 @RequestMapping("/account-types")
 @Slf4j
 public class AccountTypeController {
@@ -22,34 +21,45 @@ public class AccountTypeController {
 
     @PostMapping
     public AccountType createAccountType(@RequestBody AccountType type) {
-        // Manual validation for 2-letter alphabetic code
         String publicIdentifier = type.getPublicIdentifier();
         if (publicIdentifier == null || !publicIdentifier.matches("^[A-Za-z]{2}$")) {
+            log.warn("Attempted to create account type with invalid publicIdentifier: {}", publicIdentifier);
             throw new IllegalArgumentException("publicIdentifier must be exactly 2 alphabetic characters");
         }
-        log.info("Creating account type with public identifier: {}", publicIdentifier);
-        return accountTypeService.createAccountType(type);
+        log.info("Request to create account type with public identifier: {}", publicIdentifier);
+        AccountType created = accountTypeService.createAccountType(type);
+        log.info("Created account type with ID: {}", created.getId());
+        return created;
     }
 
     @GetMapping
     public List<AccountType> getAllAccountTypes() {
-        return accountTypeService.getAllAccountTypes();
+        log.info("Request to fetch all account types.");
+        List<AccountType> types = accountTypeService.getAllAccountTypes();
+        log.info("Found {} account types.", types.size());
+        return types;
     }
 
     @GetMapping("/{id}")
     public AccountType getAccountTypeById(@PathVariable String id) {
-        return accountTypeService.getAccountTypeById(id);
+        log.info("Request to fetch account type by ID: {}", id);
+        AccountType type = accountTypeService.getAccountTypeById(id);
+        log.info("Fetched account type: {} for ID: {}", type.getTypeName(), id);
+        return type;
     }
 
     @PutMapping("/{id}")
     public AccountType updateAccountType(@PathVariable String id, @RequestBody AccountType updatedType) {
-        log.info("Updating account type with id: {}", id);
-        return accountTypeService.updateAccountType(id, updatedType);
+        log.info("Request to update account type with id: {}", id);
+        AccountType type = accountTypeService.updateAccountType(id, updatedType);
+        log.info("Updated account type with id: {}", id);
+        return type;
     }
 
     @DeleteMapping("/{id}")
     public void deleteAccountType(@PathVariable String id) {
-        log.info("Deleting account type with id: {}", id);
+        log.info("Request to delete account type with id: {}", id);
         accountTypeService.deleteAccountType(id);
+        log.info("Deleted account type with id: {}", id);
     }
 }
