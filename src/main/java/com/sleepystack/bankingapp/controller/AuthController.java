@@ -2,9 +2,11 @@ package com.sleepystack.bankingapp.controller;
 
 import com.sleepystack.bankingapp.dto.CreateUserRequest;
 import com.sleepystack.bankingapp.dto.LoginRequest;
+import com.sleepystack.bankingapp.dto.UserResponse;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
+import com.sleepystack.bankingapp.util.UserMapper;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody @Valid CreateUserRequest request){
+    public UserResponse register(@RequestBody @Valid CreateUserRequest request){
         log.info("Request to register user with email: {}", request.getEmail());
         User user = new User();
         user.setName(request.getName());
@@ -39,7 +41,7 @@ public class AuthController {
         user.setPassword(request.getPassword());
         User created = userService.createUser(user);
         log.info("Registered user with email: {}", created.getEmail());
-        return created;
+        return UserMapper.toResponse(created);
     }
 
     @PostMapping("/login")
