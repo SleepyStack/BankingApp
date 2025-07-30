@@ -28,9 +28,11 @@ public class TransactionController {
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
             @RequestBody @Valid TransactionRequestForDeposit request) {
-        log.info("Processing deposit for user: {}, account: {}, amount: {}, description: {}",
-                userPublicId, accountNumber, request.getAmount(), request.getDescription());
-        return transactionService.deposit(userPublicId, accountNumber, request.getAmount(), request.getDescription());
+        log.info("Request to deposit amount: {} to account: {} for user: {}. Description: {}",
+                request.getAmount(), accountNumber, userPublicId, request.getDescription());
+        Transaction txn = transactionService.deposit(userPublicId, accountNumber, request.getAmount(), request.getDescription());
+        log.info("Deposit completed. Transaction ID: {}", txn.getId());
+        return txn;
     }
 
     @PostMapping("/withdraw")
@@ -38,9 +40,11 @@ public class TransactionController {
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
             @RequestBody @Valid TransactionRequestForWithdrawal request) {
-        log.info("Processing withdrawal for user: {}, account: {}, amount: {}, description: {}",
-                userPublicId, accountNumber, request.getAmount(), request.getDescription());
-        return transactionService.withdrawal(userPublicId, accountNumber, request.getAmount(), request.getDescription());
+        log.info("Request to withdraw amount: {} from account: {} for user: {}. Description: {}",
+                request.getAmount(), accountNumber, userPublicId, request.getDescription());
+        Transaction txn = transactionService.withdrawal(userPublicId, accountNumber, request.getAmount(), request.getDescription());
+        log.info("Withdrawal completed. Transaction ID: {}", txn.getId());
+        return txn;
     }
 
     @PostMapping("/transfer")
@@ -48,15 +52,20 @@ public class TransactionController {
             @PathVariable String userPublicId,
             @PathVariable String accountNumber, // source account
             @RequestBody @Valid TransactionRequestForTransfer request) {
-        log.info("Processing transfer for user: {}, from account: {}, to account: {}, amount: {}, description: {}",
-                userPublicId, accountNumber, request.getTargetAccountNumber(), request.getAmount(), request.getDescription());
-        return transactionService.transfer(userPublicId, accountNumber, request.getTargetAccountNumber(), request.getAmount(), request.getDescription());
+        log.info("Request to transfer amount: {} from account: {} to account: {} for user: {}. Description: {}",
+                request.getAmount(), accountNumber, request.getTargetAccountNumber(), userPublicId, request.getDescription());
+        Transaction txn = transactionService.transfer(userPublicId, accountNumber, request.getTargetAccountNumber(), request.getAmount(), request.getDescription());
+        log.info("Transfer completed. Transaction ID: {}", txn.getId());
+        return txn;
     }
 
     @GetMapping
     public List<Transaction> getTransactions(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber) {
-        return transactionService.getTransactionsForAccount(userPublicId, accountNumber);
+        log.info("Request to fetch transactions for account: {} by user: {}", accountNumber, userPublicId);
+        List<Transaction> txns = transactionService.getTransactionsForAccount(userPublicId, accountNumber);
+        log.info("Found {} transactions for account: {} by user: {}", txns.size(), accountNumber, userPublicId);
+        return txns;
     }
 }
