@@ -1,33 +1,98 @@
-TODO: For ACCOUNTS
-Validation: Add validation annotations to models and/or use Spring's validation framework in controllers.
-DTOs: Use Data Transfer Objects for requests and responses to avoid exposing internal entities directly.
-Error Handling: Implement a global exception handler to return user-friendly error messages.
-Security: Add authentication and authorization to restrict account access to the rightful user.
-Status & Auditing: Add fields for status (active, closed, etc.), and timestamps for creation and update.
-Transaction Safety: For balance updates, consider using transactions to avoid race conditions.
-Pagination: Add pagination to listing endpoints for scalability.
-Documentation: Add Swagger/OpenAPI documentation for endpoints.
-Account Number Uniqueness: Consider adding database-level unique constraints if possible.
+# Banking App - TODO List
 
-TODO for API Abstraction and URL Improvements
+This is a running TODO for remaining and upcoming tasks in the Banking App project. Use this as a checklist and planning document. Update as you make progress or reprioritize!
 
-- [ ] Refactor User endpoints to use `publicIdentifier` (instead of MongoDB `_id`)
-  - Update UserController to accept `publicIdentifier` in all routes
-  - Update UserService and UserRepository to query by `publicIdentifier`
-  - Example: `/users/{publicIdentifier}`
+---
 
-- [ ] Refactor AccountType endpoints to use `publicIdentifier`
-  - Update AccountTypeController to use `publicIdentifier` in all routes
-  - Update AccountTypeService and AccountTypeRepository accordingly
-  - Example: `/account-types/{publicIdentifier}`
+## Core Backend
 
-- [ ] Refactor Transaction endpoints to use account numbers and user public IDs instead of internal IDs
-  - Update TransactionController to accept account numbers and user public IDs in all transaction-related routes
-  - Update TransactionService to resolve public-facing IDs to internal IDs before processing
-  - Example: `/users/{userPublicId}/accounts/{accountNumber}/transactions/deposit`
+- [x] User registration and authentication (JWT, password hashing)
+- [x] User CRUD (Create, Read, Update, Delete)
+- [x] Account creation and management
+- [x] Account types (CRUD)
+- [x] Transactions: deposit, withdrawal, transfer
+- [x] Basic transaction history
 
-- [ ] Add helper methods in services to resolve `publicIdentifier` or account number to internal IDs
+---
 
-- [ ] Update any documentation or API specs to reflect new URL structure
+## Remaining/Upcoming Backend Features
 
-- [ ] Test all endpoints after refactoring to ensure old and new logic works as expected
+### 1. User and Account Improvements
+- [ ] Email/phone uniqueness validation & better error reporting
+- [ ] Add user status (active, locked, etc.) enforcement in authentication
+- [ ] Implement password reset (token via email)
+- [ ] Add endpoint to change password (with old password check)
+- [ ] User activity logging (last login, failed login attempts, etc.)
+- [ ] Account closure (soft delete or status flag)
+
+### 2. Transactions/Banking Logic
+- [ ] Transaction reversal/refund (admin-only)
+- [ ] Scheduled/future-dated transactions (optional/advanced)
+- [ ] Pagination & filtering for transaction history
+- [ ] Export transactions to CSV/PDF
+
+### 3. Security & Validation
+- [ ] Rate limiting for login and sensitive endpoints
+- [ ] 2FA (email/OTP, for bonus points)
+- [ ] Audit log for admin actions (deleting users/accounts, etc.)
+- [ ] Input validation improvements across all endpoints
+
+### 4. Admin/Operator Features
+- [ ] Admin endpoints for user/account management
+- [ ] Role-based access control (RBAC): restrict actions based on roles
+- [ ] Dashboard endpoints: system stats, total balances, etc.
+
+---
+
+## API & Documentation
+
+- [ ] Review and improve Swagger/OpenAPI docs
+- [ ] Add example requests/responses
+- [ ] Document error responses and status codes
+
+---
+
+## Testing
+
+- [ ] Write unit tests for services (UserService, AccountService, etc.)
+- [ ] Write integration tests for controllers
+- [ ] Test transaction edge cases: overdraft, concurrent transfers, etc.
+
+---
+
+## Frontend (for future/when ready)
+
+- [ ] Decide on stack (React, Angular, etc.)
+- [ ] Build login/register UI flows
+- [ ] User dashboard (accounts, balances, transaction history)
+- [ ] Transfer/deposit/withdraw screens
+- [ ] Admin panel (optional)
+
+---
+
+## DevOps/Deployment
+
+- [ ] Dockerize backend
+- [ ] Add configuration for MongoDB (prod/dev)
+- [ ] Setup environment variable management (.env)
+- [ ] Prepare for deployment: Heroku, AWS, etc.
+
+---
+
+## Today’s/Recent Pending Tasks
+
+- [ ] Review and finish any leftover endpoints from last session
+- [ ] Refactor error handling for consistency
+- [ ] (If started) Finish the implementation of any partially completed feature from last session
+
+---
+
+## Notes
+
+- Prioritize testing and error handling as you go.
+- If frontend becomes a focus, start with read-only views before adding mutating actions.
+- Sync with your friend/collaborator about frontend plans and API needs.
+
+---
+
+_Update this file as you make progress or if priorities shift!_
