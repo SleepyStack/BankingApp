@@ -76,18 +76,8 @@ public class AuthController {
     }
         @PostMapping("/reset-password")
         public String resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-            // Get authenticated user email from SecurityContext
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String email;
-            if (principal instanceof UserDetails) {
-                email = ((UserDetails) principal).getUsername();
-            } else if (principal instanceof com.sleepystack.bankingapp.model.User) {
-                email = ((com.sleepystack.bankingapp.model.User) principal).getEmail();
-            } else if (principal instanceof String) {
-                email = (String) principal;
-            } else {
-                throw new UnauthorizedActionException("Unable to identify user for password reset.");
-            }
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String email = user.getEmail();
             log.info("Password reset attempt for user: {}", email);
             userService.resetPasswordWithOldPassword(email, request.getOldPassword(), request.getNewPassword());
             log.info("Password changed for user: {}", email);
