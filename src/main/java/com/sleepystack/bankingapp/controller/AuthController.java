@@ -3,6 +3,7 @@ package com.sleepystack.bankingapp.controller;
 import com.sleepystack.bankingapp.dto.CreateUserRequest;
 import com.sleepystack.bankingapp.dto.LoginRequest;
 import com.sleepystack.bankingapp.dto.UserResponse;
+import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
@@ -15,6 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/auth")
@@ -53,6 +56,14 @@ public class AuthController {
             );
             if (authentication.isAuthenticated()) {
                 log.info("User {} logged in successfully", request.getEmail());
+                User user = userService.getUserByEmail(request.getEmail());
+                if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+                    log.warn("Login attempt for inactive/locked user: {}", request.getEmail());
+                    return "Account is not active. Please contact support.";
+                }
+                user.setLastLoginTime(Instant.now().toString());
+                user.setLoginAttempts(0);
+                userService.updateUserByPublicId(user.getPublicIdentifier(), user);
                 return jsonWebTokenService.generateToken(request.getEmail());
             }
         } catch (AuthenticationException e) {
