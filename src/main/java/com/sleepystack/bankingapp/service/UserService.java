@@ -2,6 +2,7 @@ package com.sleepystack.bankingapp.service;
 
 import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
+import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
@@ -121,5 +122,17 @@ public class UserService {
                 .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure "ROLE_" prefix
                 .map(SimpleGrantedAuthority::new)
                 .toList();
+    }
+
+    public void resetPasswordWithOldPassword(String email, @NotBlank(message = "Old password is required") String oldPassword, @NotBlank(message = "New password is required") String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            log.warn("Old password does not match for user: {}", email);
+            throw new UnauthorizedActionException("Old password is incorrect.");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        log.info("Password reset successful for user: {}", email);
     }
 }

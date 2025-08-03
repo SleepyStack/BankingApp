@@ -2,7 +2,9 @@ package com.sleepystack.bankingapp.controller;
 
 import com.sleepystack.bankingapp.dto.CreateUserRequest;
 import com.sleepystack.bankingapp.dto.LoginRequest;
+import com.sleepystack.bankingapp.dto.ResetPasswordRequest;
 import com.sleepystack.bankingapp.dto.UserResponse;
+import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
@@ -14,6 +16,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -69,5 +73,24 @@ public class AuthController {
             log.warn("Failed login attempt for email '{}': {}", request.getEmail(), e.getMessage());
         }
         return ("Invalid email or password");
+    }
+        @PostMapping("/reset-password")
+        public String resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+            // Get authenticated user email from SecurityContext
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String email;
+            if (principal instanceof UserDetails) {
+                email = ((UserDetails) principal).getUsername();
+            } else if (principal instanceof com.sleepystack.bankingapp.model.User) {
+                email = ((com.sleepystack.bankingapp.model.User) principal).getEmail();
+            } else if (principal instanceof String) {
+                email = (String) principal;
+            } else {
+                throw new UnauthorizedActionException("Unable to identify user for password reset.");
+            }
+            log.info("Password reset attempt for user: {}", email);
+            userService.resetPasswordWithOldPassword(email, request.getOldPassword(), request.getNewPassword());
+            log.info("Password changed for user: {}", email);
+            return "Password changed successfully.";
     }
 }
