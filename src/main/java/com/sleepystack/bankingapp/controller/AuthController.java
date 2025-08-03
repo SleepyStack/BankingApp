@@ -3,7 +3,6 @@ package com.sleepystack.bankingapp.controller;
 import com.sleepystack.bankingapp.dto.CreateUserRequest;
 import com.sleepystack.bankingapp.dto.LoginRequest;
 import com.sleepystack.bankingapp.dto.UserResponse;
-import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
