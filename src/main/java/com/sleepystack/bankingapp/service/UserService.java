@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.repository.AccountRepository;
@@ -37,6 +38,12 @@ public class UserService {
     public User createUser(User user) {
         String publicId = UserIdGenerator.generateUserId();
         user.setPublicIdentifier(publicId);
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new DuplicateKeyException("Email already registered.");
+        }
+        if (userRepository.findByPhone(user.getPhone()).isPresent()) {
+            throw new DuplicateKeyException("Phone number already registered.");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(new ArrayList<>(List.of("ROLE_USER"))); // Default role
