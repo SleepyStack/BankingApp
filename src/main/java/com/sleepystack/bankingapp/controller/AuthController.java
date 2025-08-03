@@ -69,6 +69,10 @@ public class AuthController {
                 userService.updateUserByPublicId(user.getPublicIdentifier(), user);
                 return jsonWebTokenService.generateToken(request.getEmail());
             }
+            log.warn("Failed login attempt for email '{}': Invalid credentials", request.getEmail());
+            userService.getUserByEmail(request.getEmail()).setLoginAttempts(
+                    userService.getUserByEmail(request.getEmail()).getLoginAttempts() + 1);
+            throw new UnauthorizedActionException("Invalid email or password");
         } catch (AuthenticationException e) {
             log.warn("Failed login attempt for email '{}': {}", request.getEmail(), e.getMessage());
         }
