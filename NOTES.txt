@@ -19,8 +19,8 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 
 ### 1. User and Account Improvements
 - [x] Email/phone uniqueness validation & better error reporting
-- [ ] Add user status (active, locked, etc.) enforcement in authentication
-- [ ] Implement password reset (token via email)
+- [x] Add user status (active, locked, etc.) enforcement in authentication
+- [ ] Implement password reset (token via email) -> DEFERRED
 - [ ] Add endpoint to change password (with old password check)
 - [ ] User activity logging (last login, failed login attempts, etc.)
 - [ ] Account closure (soft delete or status flag)
