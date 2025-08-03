@@ -28,8 +28,12 @@ public class User {
     private String publicIdentifier;
 
     private String name;
+
+    @Indexed(unique = true)
     private String email;
+    @Indexed(unique = true)
     private String phone;
+
     private String password;
     private List<String> roles;
     private String status;
