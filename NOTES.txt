@@ -18,7 +18,7 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 ## Remaining/Upcoming Backend Features
 
 ### 1. User and Account Improvements
-- [ ] Email/phone uniqueness validation & better error reporting
+- [x] Email/phone uniqueness validation & better error reporting
 - [ ] Add user status (active, locked, etc.) enforcement in authentication
 - [ ] Implement password reset (token via email)
 - [ ] Add endpoint to change password (with old password check)
