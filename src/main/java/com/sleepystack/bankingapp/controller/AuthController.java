@@ -4,6 +4,7 @@ import com.sleepystack.bankingapp.dto.CreateUserRequest;
 import com.sleepystack.bankingapp.dto.LoginRequest;
 import com.sleepystack.bankingapp.dto.ResetPasswordRequest;
 import com.sleepystack.bankingapp.dto.UserResponse;
+import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
@@ -69,12 +70,16 @@ public class AuthController {
                 userService.updateUserByPublicId(user.getPublicIdentifier(), user);
                 return jsonWebTokenService.generateToken(request.getEmail());
             }
-            log.warn("Failed login attempt for email '{}': Invalid credentials", request.getEmail());
-            userService.getUserByEmail(request.getEmail()).setLoginAttempts(
-                    userService.getUserByEmail(request.getEmail()).getLoginAttempts() + 1);
-            throw new UnauthorizedActionException("Invalid email or password");
         } catch (AuthenticationException e) {
             log.warn("Failed login attempt for email '{}': {}", request.getEmail(), e.getMessage());
+            try {
+                User user = userService.getUserByEmail(request.getEmail());
+                user.setLoginAttempts(user.getLoginAttempts() + 1);
+                userService.updateUserByPublicId(user.getPublicIdentifier(), user);
+            } catch (ResourceNotFoundException ex) {
+                // User not found
+            }
+            throw new UnauthorizedActionException("Invalid email or password");
         }
         return ("Invalid email or password");
     }
