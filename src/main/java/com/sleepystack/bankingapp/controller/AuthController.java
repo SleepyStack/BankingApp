@@ -7,7 +7,7 @@ import com.sleepystack.bankingapp.dto.UserResponse;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.User;
-import com.sleepystack.bankingapp.model.enums.AccountStatus;
+import com.sleepystack.bankingapp.model.enums.UserStatus;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
 import com.sleepystack.bankingapp.util.UserMapper;
@@ -19,7 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -28,6 +27,9 @@ import java.time.Instant;
 @RequestMapping("/auth")
 @Slf4j
 public class AuthController {
+
+    private static final int MAX_LOGIN_ATTEMPTS = 5;
+
     private final UserService userService;
     private final JsonWebTokenService jsonWebTokenService;
     private final AuthenticationManager authenticationManager;
@@ -40,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody @Valid CreateUserRequest request){
+    public UserResponse register(@RequestBody @Valid CreateUserRequest request) {
         log.info("Request to register user with email: {}", request.getEmail());
         User user = new User();
         user.setName(request.getName());
@@ -55,42 +57,60 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest request) {
         log.info("Login attempt for email: {}", request.getEmail());
+        User user = null;
         try {
+            user = userService.getUserByEmail(request.getEmail());
+
+            if (!UserStatus.ACTIVE.equals(user.getStatus())) {
+                log.warn("Login attempt for non-active user: {} (status: {})", request.getEmail(), user.getStatus());
+                return "Account is not active. Please contact support.";
+            }
+
+            if (user.getLoginAttempts() >= MAX_LOGIN_ATTEMPTS) {
+                user.setStatus(UserStatus.LOCKED);
+                userService.updateUserByPublicId(user.getPublicIdentifier(), user);
+                log.warn("User {} is locked due to too many failed login attempts", request.getEmail());
+                return "Account is locked due to too many failed login attempts. Please contact support.";
+            }
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
+
             if (authentication.isAuthenticated()) {
                 log.info("User {} logged in successfully", request.getEmail());
-                User user = userService.getUserByEmail(request.getEmail());
-                if (!AccountStatus.ACTIVE.equals(user.getStatus())) {
-                    log.warn("Login attempt for inactive/locked user: {}", request.getEmail());
-                    return "Account is not active. Please contact support.";
-                }
                 user.setLastLoginTime(Instant.now().toString());
                 user.setLoginAttempts(0);
                 userService.updateUserByPublicId(user.getPublicIdentifier(), user);
                 return jsonWebTokenService.generateToken(request.getEmail());
             }
+
         } catch (AuthenticationException e) {
             log.warn("Failed login attempt for email '{}': {}", request.getEmail(), e.getMessage());
-            try {
-                User user = userService.getUserByEmail(request.getEmail());
-                user.setLoginAttempts(user.getLoginAttempts() + 1);
+            if (user != null) {
+                int newAttempts = user.getLoginAttempts() + 1;
+                user.setLoginAttempts(newAttempts);
+                if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+                    user.setStatus(UserStatus.LOCKED);
+                    log.warn("User {} locked after too many failed attempts.", request.getEmail());
+                }
                 userService.updateUserByPublicId(user.getPublicIdentifier(), user);
-            } catch (ResourceNotFoundException ex) {
-                // User not found
             }
             throw new UnauthorizedActionException("Invalid email or password");
+        } catch (ResourceNotFoundException ex) {
+            // User not found
+            throw new UnauthorizedActionException("Invalid email or password");
         }
-        return ("Invalid email or password");
+        return "Invalid email or password";
     }
-        @PostMapping("/reset-password")
-        public String resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String email = user.getEmail();
-            log.info("Password reset attempt for user: {}", email);
-            userService.resetPasswordWithOldPassword(email, request.getOldPassword(), request.getNewPassword());
-            log.info("Password changed for user: {}", email);
-            return "Password changed successfully.";
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = user.getEmail();
+        log.info("Password reset attempt for user: {}", email);
+        userService.resetPasswordWithOldPassword(email, request.getOldPassword(), request.getNewPassword());
+        log.info("Password changed for user: {}", email);
+        return "Password changed successfully.";
     }
 }
