@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.dto;
 
+import com.sleepystack.bankingapp.model.enums.UserStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,7 @@ public class UserResponse {
     private String email;
     private String phone;
     private List<String> roles;
-    private String status;
+    private UserStatus status;
     private String lastLoginTime;
     private int loginAttempts;
     private Instant createdAt;
