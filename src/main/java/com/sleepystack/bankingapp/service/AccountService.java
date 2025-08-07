@@ -84,10 +84,10 @@ public class AccountService {
         return account;
     }
 
-    public void deleteAccountByAccountNumber(String accountNumber) {
+    public void closeAccountByAccountNumber(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
-        accountRepository.deleteById(account.getId());
-        log.info("Deleted account [{}]", accountNumber);
+        account.setStatus(AccountStatus.CLOSED);
+        log.info("Closed account [{}]", accountNumber);
     }
 }
