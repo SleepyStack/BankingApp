@@ -5,6 +5,7 @@ import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.model.enums.AccountStatus;
+import com.sleepystack.bankingapp.model.enums.UserStatus;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.model.User;

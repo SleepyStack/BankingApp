@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.model;
 
+import com.sleepystack.bankingapp.model.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +37,7 @@ public class User {
 
     private String password;
     private List<String> roles;
-    private String status;
+    private UserStatus status;
     private String lastLoginTime;
     private int loginAttempts;
 
