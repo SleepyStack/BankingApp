@@ -21,8 +21,8 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 - [x] Email/phone uniqueness validation & better error reporting
 - [x] Add user status (active, locked, etc.) enforcement in authentication
 - [x] Add endpoint to change password (with old password check)
-- [ ] User activity logging (last login, failed login attempts, etc.)
-- [ ] Account closure (soft delete or status flag)
+- [X] User activity logging (last login, failed login attempts, etc.)
+- [X] Account closure (soft delete or status flag)
 
 ### 2. Transactions/Banking Logic
 - [ ] Transaction reversal/refund (admin-only)
@@ -32,7 +32,6 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 
 ### 3. Security & Validation
 - [ ] Rate limiting for login and sensitive endpoints
-- [ ] 2FA (email/OTP, for bonus points)
 - [ ] Audit log for admin actions (deleting users/accounts, etc.)
 - [ ] Input validation improvements across all endpoints
 
