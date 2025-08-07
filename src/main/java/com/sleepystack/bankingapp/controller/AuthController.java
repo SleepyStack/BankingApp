@@ -7,6 +7,7 @@ import com.sleepystack.bankingapp.dto.UserResponse;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.User;
+import com.sleepystack.bankingapp.model.enums.AccountStatus;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
 import com.sleepystack.bankingapp.util.UserMapper;
@@ -61,7 +62,7 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 log.info("User {} logged in successfully", request.getEmail());
                 User user = userService.getUserByEmail(request.getEmail());
-                if (!"ACTIVE".equalsIgnoreCase(user.getStatus())) {
+                if (!AccountStatus.ACTIVE.equals(user.getStatus())) {
                     log.warn("Login attempt for inactive/locked user: {}", request.getEmail());
                     return "Account is not active. Please contact support.";
                 }

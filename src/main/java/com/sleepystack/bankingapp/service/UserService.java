@@ -4,6 +4,7 @@ import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.Account;
+import com.sleepystack.bankingapp.model.enums.AccountStatus;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.model.User;
@@ -49,6 +50,7 @@ public class UserService {
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(new ArrayList<>(List.of("ROLE_USER"))); // Default role
         }
+        user.setStatus(UserStatus.ACTIVE);
         User saved = userRepository.save(user);
         log.info("Created user [{}] with email [{}]", saved.getPublicIdentifier(), saved.getEmail());
         return saved;
