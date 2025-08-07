@@ -100,8 +100,14 @@ public class UserService {
                     return new ResourceNotFoundException("User not found");
                 });
         List<Account> accounts = accountRepository.findAllByUserId(user.getId());
-        accountRepository.deleteAll(accounts);
-        userRepository.deleteById(user.getId());
+        if (!accounts.isEmpty()) {
+            for (Account account : accounts) {
+                account.setStatus(AccountStatus.CLOSED);
+                accountRepository.save(account);
+                log.info("Closed account [{}] for user [{}]", account.getAccountNumber(), publicId);
+            }
+        }
+        user.setStatus(UserStatus.DEACTIVATED);
         log.info("Deleted user [{}] and all their accounts", publicId);
     }
 
