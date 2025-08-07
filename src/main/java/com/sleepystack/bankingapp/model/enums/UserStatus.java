@@ -4,6 +4,5 @@ public enum UserStatus {
     ACTIVE,
     INACTIVE,
     LOCKED,
-    SUSPENDED,
-    CLOSED
+    SUSPENDED
 }
