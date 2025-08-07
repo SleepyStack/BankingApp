@@ -5,6 +5,7 @@ import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.model.AccountType;
+import com.sleepystack.bankingapp.model.enums.AccountStatus;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
@@ -46,6 +47,7 @@ public class AccountService {
             account.setUserId(user.getId());
             account.setAccountTypeId(accountType.getId());
             account.setAccountNumber(accountNumber);
+            account.setStatus(AccountStatus.ACTIVE);
             try {
                 Account saved = accountRepository.save(account);
                 log.info("Created new account [{}] for user [{}] with type [{}]", accountNumber, userPublicId, accountTypePublicIdentifier);
