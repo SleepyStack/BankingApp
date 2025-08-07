@@ -121,6 +121,10 @@ public class UserService {
         return user;
     }
 
+    public List<User> getAllActiveUsers() {
+        return userRepository.findAllByStatus(UserStatus.ACTIVE);
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities(String publicId) {
         User user = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> {
