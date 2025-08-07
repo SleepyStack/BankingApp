@@ -31,6 +31,14 @@ public class UserController {
     }
 
     @GetMapping
+    public List<User> getAllActiveUsers(){
+        log.info("Request to fetch all active users");
+        List<User> users = userService.getAllActiveUsers();
+        log.info("Fetched {} active users", users.size());
+        return users;
+    }
+
+    @GetMapping
     public List<User> getAllUsers(){
         log.info("Request to fetch all users");
         List<User> users = userService.getAllUsers();
