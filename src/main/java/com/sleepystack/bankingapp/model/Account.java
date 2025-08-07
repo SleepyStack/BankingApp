@@ -1,4 +1,5 @@
 package com.sleepystack.bankingapp.model;
+import com.sleepystack.bankingapp.model.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class Account {
 
     private String accountTypeId;
     private double balance;
-    private String status;
+    private AccountStatus status;
 
     @CreatedDate
     private Instant createdAt;
