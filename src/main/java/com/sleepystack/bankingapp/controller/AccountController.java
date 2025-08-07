@@ -51,9 +51,9 @@ public class AccountController {
     }
 
     @DeleteMapping("/{accountNumber}")
-    public void deleteAccount(@PathVariable String accountNumber){
+    public void closeAccount(@PathVariable String accountNumber){
         log.info("Request to delete account: {}", accountNumber);
-        accountService.deleteAccountByAccountNumber(accountNumber);
+        accountService.closeAccountByAccountNumber(accountNumber);
         log.info("Deleted account: {}", accountNumber);
     }
 }
