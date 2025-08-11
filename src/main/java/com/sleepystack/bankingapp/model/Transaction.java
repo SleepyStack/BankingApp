@@ -1,6 +1,7 @@
 package com.sleepystack.bankingapp.model;
 
 import com.sleepystack.bankingapp.model.enums.TransactionStatus;
+import com.sleepystack.bankingapp.model.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class Transaction {
 
     private String accountId;
     private String accountNumber;
-    private String type;
+    private TransactionType type;
     private double amount;
     private Instant timestamp;
     private String targetAccountId;
