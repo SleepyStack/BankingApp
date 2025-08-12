@@ -26,7 +26,6 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 
 ### 2. Transactions/Banking Logic
 - [X] Transaction reversal/refund (admin-only)
-- [ ] Scheduled/future-dated transactions (optional/advanced)
 - [ ] Pagination & filtering for transaction history
 - [ ] Export transactions to CSV/PDF
 
