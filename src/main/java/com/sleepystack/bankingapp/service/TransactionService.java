@@ -13,6 +13,8 @@ import com.sleepystack.bankingapp.repository.TransactionRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,6 +133,7 @@ public class TransactionService {
         log.info("Fetched {} transactions for account [{}] by user [{}]", txns.size(), accountNumber, userPublicId);
         return txns;
     }
+
     @Transactional
     public Transaction reverseTransaction(String adminPublicId, String transactionId, String reason) {
         User admin = userRepository.findByPublicIdentifier(adminPublicId)
@@ -252,5 +255,19 @@ public class TransactionService {
         Transaction savedReversal = transactionRepository.save(reversalTxn);
         log.info("Reversed txn {} by admin {}. Reason: {}", transactionId, adminPublicId, reason);
         return savedReversal;
+    }
+    public Page<Transaction> getFilteredTransactions(String userPublicId, String accountNumber, TransactionType type,
+                                                     TransactionStatus status, Double minAmount,
+                                                     Double maxAmount, Instant startDate,
+                                                     Instant endDate, Pageable pageable){
+        User user = userRepository.findByPublicIdentifier(userPublicId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found for this user"));
+        Page<Transaction> transactions = transactionRepository.findTransactionsWithFilters(
+                accountNumber, type, status, minAmount, maxAmount, startDate, endDate, pageable);
+        log.info("Fetched {} transactions for account [{}] by user [{}] with filters: type={}, status={}, minAmount={}, maxAmount={}, startDate={}, endDate={}",
+                transactions.getTotalElements(), accountNumber, userPublicId, type, status, minAmount, maxAmount, startDate, endDate);
+        return transactions;
     }
 }
