@@ -1,14 +1,14 @@
 package com.sleepystack.bankingapp.controller;
 
-import com.sleepystack.bankingapp.dto.ReverseTransactionRequest;
-import com.sleepystack.bankingapp.dto.TransactionRequestForDeposit;
-import com.sleepystack.bankingapp.dto.TransactionRequestForTransfer;
-import com.sleepystack.bankingapp.dto.TransactionRequestForWithdrawal;
+import com.sleepystack.bankingapp.dto.*;
 import com.sleepystack.bankingapp.model.Transaction;
 import com.sleepystack.bankingapp.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,6 +69,7 @@ public class TransactionController {
         log.info("Found {} transactions for account: {} by user: {}", txns.size(), accountNumber, userPublicId);
         return txns;
     }
+
     @PostMapping("/reverse")
     public Transaction reverseTransaction(@RequestBody @Valid ReverseTransactionRequest request) {
         log.info("Admin [{}] requested reversal for transaction [{}] with reason: {}", request.getAdminPublicId(), request.getTransactionId(), request.getReason());
@@ -76,4 +77,27 @@ public class TransactionController {
         log.info("Reversal completed for transaction [{}] by admin [{}]", request.getTransactionId(), request.getAdminPublicId());
         return reversedTxn;
     }
+
+    @PostMapping("/filter")
+    public Page<Transaction> filterTransactions(
+            @PathVariable String userPublicId,
+            @PathVariable String accountNumber,
+            @RequestBody TransactionHistoryFilterRequest filterRequest) {
+        Pageable pageable = PageRequest.of(
+                filterRequest.getPage() != null ? filterRequest.getPage() : 0,
+                filterRequest.getSize() != null ? filterRequest.getSize() : 10
+        );
+        return transactionService.getFilteredTransactions(
+                userPublicId,
+                accountNumber,
+                filterRequest.getType(),
+                filterRequest.getStatus(),
+                filterRequest.getMinAmount(),
+                filterRequest.getMaxAmount(),
+                filterRequest.getStartDate(),
+                filterRequest.getEndDate(),
+                pageable
+        );
+    }
+
 }

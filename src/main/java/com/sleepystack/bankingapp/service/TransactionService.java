@@ -13,6 +13,8 @@ import com.sleepystack.bankingapp.repository.TransactionRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -254,20 +256,18 @@ public class TransactionService {
         log.info("Reversed txn {} by admin {}. Reason: {}", transactionId, adminPublicId, reason);
         return savedReversal;
     }
-
-    public List<?> getTransactionsFromDateRange(String userPublicId, String accountNumber, Instant startDate, Instant endDate) {
+    public Page<Transaction> getFilteredTransactions(String userPublicId, String accountNumber, TransactionType type,
+                                                     TransactionStatus status, Double minAmount,
+                                                     Double maxAmount, Instant startDate,
+                                                     Instant endDate, Pageable pageable){
         User user = userRepository.findByPublicIdentifier(userPublicId)
-                .orElseThrow(() -> {
-                    log.warn("User not found for fetching transactions in date range, publicId: {}", userPublicId);
-                    return new ResourceNotFoundException("User not found");
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
-                .orElseThrow(() -> {
-                    log.warn("Account not found for fetching transactions in date range: {} for user: {}", accountNumber, userPublicId);
-                    return new ResourceNotFoundException("Account not found for this user");
-                });
-        List<Transaction> txns = transactionRepository.findByAccountNumberAndTimestampBetweenOrderByTimestampDesc(accountNumber, startDate, endDate);
-        log.info("Fetched {} transactions for account [{}] by user [{}] in date range", txns.size(), accountNumber, userPublicId);
-        return txns;
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found for this user"));
+        Page<Transaction> transactions = transactionRepository.findTransactionsWithFilters(
+                accountNumber, type, status, minAmount, maxAmount, startDate, endDate, pageable);
+        log.info("Fetched {} transactions for account [{}] by user [{}] with filters: type={}, status={}, minAmount={}, maxAmount={}, startDate={}, endDate={}",
+                transactions.getTotalElements(), accountNumber, userPublicId, type, status, minAmount, maxAmount, startDate, endDate);
+        return transactions;
     }
 }
