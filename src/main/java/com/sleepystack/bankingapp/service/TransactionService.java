@@ -131,6 +131,7 @@ public class TransactionService {
         log.info("Fetched {} transactions for account [{}] by user [{}]", txns.size(), accountNumber, userPublicId);
         return txns;
     }
+
     @Transactional
     public Transaction reverseTransaction(String adminPublicId, String transactionId, String reason) {
         User admin = userRepository.findByPublicIdentifier(adminPublicId)
@@ -252,5 +253,21 @@ public class TransactionService {
         Transaction savedReversal = transactionRepository.save(reversalTxn);
         log.info("Reversed txn {} by admin {}. Reason: {}", transactionId, adminPublicId, reason);
         return savedReversal;
+    }
+
+    public List<?> getTransactionsFromDateRange(String userPublicId, String accountNumber, Instant startDate, Instant endDate) {
+        User user = userRepository.findByPublicIdentifier(userPublicId)
+                .orElseThrow(() -> {
+                    log.warn("User not found for fetching transactions in date range, publicId: {}", userPublicId);
+                    return new ResourceNotFoundException("User not found");
+                });
+        Account account = accountRepository.findByAccountNumberAndUserId(accountNumber, user.getId())
+                .orElseThrow(() -> {
+                    log.warn("Account not found for fetching transactions in date range: {} for user: {}", accountNumber, userPublicId);
+                    return new ResourceNotFoundException("Account not found for this user");
+                });
+        List<Transaction> txns = transactionRepository.findByAccountNumberAndTimestampBetweenOrderByTimestampDesc(accountNumber, startDate, endDate);
+        log.info("Fetched {} transactions for account [{}] by user [{}] in date range", txns.size(), accountNumber, userPublicId);
+        return txns;
     }
 }
