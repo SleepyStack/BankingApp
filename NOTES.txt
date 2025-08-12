@@ -27,7 +27,6 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 ### 2. Transactions/Banking Logic
 - [X] Transaction reversal/refund (admin-only)
 - [X] Pagination & filtering for transaction history
-- [ ] Export transactions to CSV/PDF
 
 ### 3. Security & Validation
 - [ ] Rate limiting for login and sensitive endpoints
