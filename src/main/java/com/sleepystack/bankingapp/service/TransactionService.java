@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,17 +141,8 @@ public class TransactionService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public Transaction reverseTransaction(String adminPublicId, String transactionId, String reason) {
-        User admin = userRepository.findByPublicIdentifier(adminPublicId)
-                .orElseThrow(() -> {
-                    log.warn("Admin user not found for reversing transaction, publicId: {}", adminPublicId);
-                    return new ResourceNotFoundException("Admin user not found");
-                });
-        if (admin.getRoles() == null || !admin.getRoles().contains("ROLE_ADMIN")) {
-            log.warn("User {} does not have admin rights for reversal", adminPublicId);
-            throw new UnauthorizedActionException("Only admins can reverse transactions");
-        }
-
+    public Transaction reverseTransaction(String transactionId, String reason) {
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> {
                     log.warn("Transaction not found for reversal: {}", transactionId);
@@ -205,8 +197,8 @@ public class TransactionService {
                         null,
                         null,
                         TransactionStatus.REVERSED,
-                        admin.getId(),
-                        String.format("Reversal of deposit txn %s by admin %s. Reason: %s", transactionId, adminPublicId, reason)
+                        actingAdmin.getId(),
+                        String.format("Reversal of deposit txn %s by admin %s. Reason: %s", transactionId, actingAdmin.getId(), reason)
                 );
                 break;
             case WITHDRAWAL:
@@ -222,8 +214,8 @@ public class TransactionService {
                         null,
                         null,
                         TransactionStatus.REVERSED,
-                        admin.getId(),
-                        String.format("Reversal of withdrawal txn %s by admin %s. Reason: %s", transactionId, adminPublicId, reason)
+                        actingAdmin.getId(),
+                        String.format("Reversal of withdrawal txn %s by admin %s. Reason: %s", transactionId, actingAdmin.getId(), reason)
                 );
                 break;
             case TRANSFER:
@@ -249,8 +241,8 @@ public class TransactionService {
                         toAccount.getId(),
                         toAccount.getAccountNumber(),
                         TransactionStatus.REVERSED,
-                        admin.getId(),
-                        String.format("Reversal of transfer txn %s by admin %s. Reason: %s", transactionId, adminPublicId, reason)
+                        actingAdmin.getId(),
+                        String.format("Reversal of transfer txn %s by admin %s. Reason: %s", transactionId, actingAdmin.getId(), reason)
                 );
                 break;
             default:
@@ -258,9 +250,11 @@ public class TransactionService {
                 throw new IllegalArgumentException("Unsupported transaction type for reversal");
         }
         Transaction savedReversal = transactionRepository.save(reversalTxn);
-        log.info("Reversed txn {} by admin {}. Reason: {}", transactionId, adminPublicId, reason);
+        log.info("Reversed txn {} by admin {}. Reason: {}", transactionId, actingAdmin.getId(), reason);
+        adminAuditLogger.info("Admin [{}] reversed transaction [{}] with reason: {}", actingAdmin.getPublicIdentifier(), transactionId, reason);
         return savedReversal;
     }
+
     public Page<Transaction> getFilteredTransactions(String userPublicId, String accountNumber, TransactionType type,
                                                      TransactionStatus status, Double minAmount,
                                                      Double maxAmount, Instant startDate,
