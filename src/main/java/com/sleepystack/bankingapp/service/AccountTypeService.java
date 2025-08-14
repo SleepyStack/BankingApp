@@ -2,11 +2,14 @@ package com.sleepystack.bankingapp.service;
 
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.AccountType;
+import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +25,13 @@ public class AccountTypeService {
         this.accountTypeRepository = accountTypeRepository;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountType createAccountType(AccountType accountType) {
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AccountType saved = accountTypeRepository.save(accountType);
         log.info("Created account type [{}] with publicIdentifier [{}]", saved.getTypeName(), saved.getPublicIdentifier());
+        adminAuditLogger.info("Admin [{}] created account type [{}] (publicIdentifier: {})",
+                actingAdmin.getPublicIdentifier(), saved.getTypeName(), saved.getPublicIdentifier());
         return saved;
     }
 
@@ -44,7 +51,9 @@ public class AccountTypeService {
         return type;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountType updateAccountType(String id, AccountType updatedType) {
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AccountType existingType = accountTypeRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Account type not found for update, id: {}", id);
@@ -53,10 +62,14 @@ public class AccountTypeService {
         updatedType.setId(id);
         AccountType saved = accountTypeRepository.save(updatedType);
         log.info("Updated account type [{}] (id: {})", saved.getTypeName(), id);
+        adminAuditLogger.info("Admin [{}] updated account type [{}] (id: {})",
+                actingAdmin.getPublicIdentifier(), saved.getTypeName(), id);
         return saved;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccountType(String id) {
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AccountType existingType = accountTypeRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Account type not found for deletion, id: {}", id);
@@ -64,5 +77,7 @@ public class AccountTypeService {
                 });
         accountTypeRepository.deleteById(id);
         log.info("Deleted account type [{}] (id: {})", existingType.getTypeName(), id);
+        adminAuditLogger.info("Admin [{}] deleted account type [{}] (id: {})",
+                actingAdmin.getPublicIdentifier(), existingType.getTypeName(), id);
     }
 }
