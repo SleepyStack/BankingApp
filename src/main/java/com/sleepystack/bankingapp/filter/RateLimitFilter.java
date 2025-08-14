@@ -28,6 +28,11 @@ public class RateLimitFilter implements Filter {
             key = clientIp + ":auth_or_home";
         } else if (uri.startsWith("/auth/register")) {
             key = clientIp + ":register";
+        }else if (uri.startsWith("/swagger-ui") ||
+                uri.startsWith("/v3/api-docs") ||
+                uri.startsWith("/swagger-resources") ||
+                uri.startsWith("/webjars")) {
+            key = clientIp + ":swagger";
         } else {
             key = clientIp + ":other";
         }
@@ -39,6 +44,8 @@ public class RateLimitFilter implements Filter {
             } else if (k.endsWith("register")) {
                 // 5 req/hour
                 return Bucket.builder().addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofHours(1)))).build();
+            } else if (k.endsWith("swagger")) {
+                return Bucket.builder().addLimit(Bandwidth.classic(1000, Refill.greedy(1000, Duration.ofMinutes(1)))).build();
             } else {
                 // 15 req/min
                 return Bucket.builder().addLimit(Bandwidth.classic(15, Refill.greedy(15, Duration.ofMinutes(1)))).build();
