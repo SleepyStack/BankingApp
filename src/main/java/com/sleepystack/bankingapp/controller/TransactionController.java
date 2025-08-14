@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class TransactionController {
     }
 
     @PostMapping("/deposit")
+    @PreAuthorize("#userPublicId == principal.publicIdentifier")
     public Transaction deposit(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
@@ -40,6 +42,7 @@ public class TransactionController {
     }
 
     @PostMapping("/withdraw")
+    @PreAuthorize("#userPublicId == principal.publicIdentifier")
     public Transaction withdraw(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
@@ -52,6 +55,7 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
+    @PreAuthorize("#userPublicId == principal.publicIdentifier")
     public Transaction transfer(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber, // source account
@@ -64,6 +68,7 @@ public class TransactionController {
     }
 
     @GetMapping
+    @PreAuthorize("#userPublicId == principal.publicIdentifier")
     public List<Transaction> getTransactions(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber) {
@@ -82,6 +87,7 @@ public class TransactionController {
     }
 
     @PostMapping("/filter")
+    @PreAuthorize("#userPublicId == principal.publicIdentifier")
     public Page<Transaction> filterTransactions(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,

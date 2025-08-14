@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class AccountController {
     }
 
     @PostMapping("/{accountTypePublicIdentifier}")
+    @PreAuthorize("#userPublicId == principal.publicIdentifier")
     public Account createAccount(@PathVariable String userPublicId,
                                  @PathVariable String accountTypePublicIdentifier,
                                  @RequestBody @Valid CreateAccountRequest request) {
@@ -37,6 +39,7 @@ public class AccountController {
     }
 
     @GetMapping
+    @PreAuthorize("#userPublicId == principal.publicIdentifier or hasRole('ADMIN')")
     public List<Account> getAllAccountsForUser(@PathVariable String userPublicId) {
         log.info("Fetching all accounts for user: {}", userPublicId);
         List<Account> accounts = accountService.findAllByUserPublicId(userPublicId);
@@ -45,6 +48,7 @@ public class AccountController {
     }
 
     @GetMapping("/{accountNumber}")
+    @PreAuthorize("#userPublicId == principal.publicIdentifier or hasRole('ADMIN')")
     public Account getAccount(@PathVariable String userPublicId,
                               @PathVariable String accountNumber) {
         log.info("Fetching account {} for user: {}", accountNumber, userPublicId);
