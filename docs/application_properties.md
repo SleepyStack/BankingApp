@@ -43,7 +43,7 @@ Spring Boot Actuator endpoints provide application health and info for monitorin
 ```properties
 # Expose health and info endpoints at /actuator/health and /actuator/info
 management.endpoints.web.exposure.include=health,info
-
+management.info.env.enabled=true
 # Show detailed health info (database, etc) on /actuator/health
 management.endpoint.health.show-details=always
 

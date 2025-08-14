@@ -41,7 +41,7 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 
 ## API & Documentation
 
-- [ ] Review and improve Swagger/OpenAPI docs
+- [X] Review and improve Swagger/OpenAPI docs
 - [X] Add example requests/responses
 - [X] Document error responses and status codes
 
