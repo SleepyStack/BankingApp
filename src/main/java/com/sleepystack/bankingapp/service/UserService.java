@@ -13,6 +13,8 @@ import com.sleepystack.bankingapp.util.UserIdGenerator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
 
     @Autowired
     public UserService(UserRepository userRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {

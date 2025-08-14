@@ -12,6 +12,8 @@ import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.TransactionRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
 
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository, UserRepository userRepository) {

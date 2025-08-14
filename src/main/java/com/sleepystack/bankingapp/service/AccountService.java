@@ -11,6 +11,8 @@ import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
 import com.sleepystack.bankingapp.util.AccountNumberGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     private final AccountTypeRepository accountTypeRepository;
+    private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
 
     @Autowired
     public AccountService(AccountRepository accountRepository,

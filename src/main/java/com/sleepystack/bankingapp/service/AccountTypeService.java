@@ -4,6 +4,8 @@ import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.model.AccountType;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @Service
 public class AccountTypeService {
     private final AccountTypeRepository accountTypeRepository;
+    private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
 
     @Autowired
     public AccountTypeService(AccountTypeRepository accountTypeRepository) {
