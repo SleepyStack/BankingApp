@@ -30,7 +30,7 @@ public class UserController {
         return user;
     }
 
-    @GetMapping
+    @GetMapping("/active")
     public List<User> getAllActiveUsers(){
         log.info("Request to fetch all active users");
         List<User> users = userService.getAllActiveUsers();
