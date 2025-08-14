@@ -76,4 +76,12 @@ public class UserController {
         userService.deleteUserByPublicId(publicId);
         log.info("Deleted user with public ID: {}", publicId);
     }
+
+    @PostMapping("/{publicId}/promote")
+    public User promoteToAdmin(@PathVariable String publicId) {
+        log.info("Request to promote user [{}] to admin.", publicId);
+        User promoted = userService.promoteToAdmin(publicId);
+        log.info("User [{}] promoted to admin.", publicId);
+        return promoted;
+    }
 }

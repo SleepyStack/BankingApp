@@ -154,4 +154,17 @@ public class UserService {
         userRepository.save(user);
         log.info("Password reset successful for user: {}", email);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    public User promoteToAdmin(String publicId) {
+        User user = userRepository.findByPublicIdentifier(publicId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        List<String> roles = user.getRoles();
+        if (!roles.contains("ROLE_ADMIN")) {
+            roles.add("ROLE_ADMIN");
+            user.setRoles(roles);
+            userRepository.save(user);
+            log.info("Promoted user [{}] to admin.", publicId);
+        }
+        return user;
+    }
 }
