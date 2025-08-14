@@ -22,11 +22,14 @@ public class RateLimitFilter implements Filter {
     throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         String clientIp = request.getRemoteAddr();
-        Bucket bucket = buckets.computeIfAbsent(clientIp, k ->
-                        Bucket.builder()
-                            .addLimit(Bandwidth.classic(10, Refill.greedy(20, Duration.ofMinutes(1))))
-                            .build()
-        );
+        String uri = request.getRequestURI();
+        Bucket bucket = buckets.computeIfAbsent(clientIp, k -> uri.startsWith("/auth/login") ? Bucket.builder()
+                .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1))))
+                .build() : uri.startsWith("/auth/register") ? Bucket.builder()
+                .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(60))))
+                .build() : Bucket.builder()
+                .addLimit(Bandwidth.classic(15, Refill.greedy(15, Duration.ofMinutes(1))))
+                .build());
         if (bucket.tryConsume(1)) {
             chain.doFilter(req, res);
         } else {
