@@ -4,6 +4,10 @@ import com.sleepystack.bankingapp.dto.*;
 import com.sleepystack.bankingapp.model.Transaction;
 import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.TransactionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -21,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userPublicId}/accounts/{accountNumber}/transactions")
 @Slf4j
+@Tag(name = "Transactions", description = "Endpoints for account transactions")
 public class TransactionController {
     private final TransactionService transactionService;
     private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
@@ -32,6 +37,12 @@ public class TransactionController {
 
     @PostMapping("/deposit")
     @PreAuthorize("#userPublicId == principal.publicIdentifier")
+    @Operation(summary = "Deposit funds", description = "Deposit money into an account.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Deposit completed"),
+            @ApiResponse(responseCode = "404", description = "User or account not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     public Transaction deposit(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
@@ -45,6 +56,12 @@ public class TransactionController {
 
     @PostMapping("/withdraw")
     @PreAuthorize("#userPublicId == principal.publicIdentifier")
+    @Operation(summary = "Withdraw funds", description = "Withdraw money from an account.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Withdrawal completed"),
+            @ApiResponse(responseCode = "404", description = "User or account not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request or insufficient funds")
+    })
     public Transaction withdraw(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,
@@ -58,6 +75,12 @@ public class TransactionController {
 
     @PostMapping("/transfer")
     @PreAuthorize("#userPublicId == principal.publicIdentifier")
+    @Operation(summary = "Transfer funds", description = "Transfer money from one account to another.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Transfer completed"),
+            @ApiResponse(responseCode = "404", description = "User or account not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request or insufficient funds")
+    })
     public Transaction transfer(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber, // source account
@@ -71,6 +94,11 @@ public class TransactionController {
 
     @GetMapping
     @PreAuthorize("#userPublicId == principal.publicIdentifier")
+    @Operation(summary = "List transactions", description = "Get all transactions for an account.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "List of transactions"),
+            @ApiResponse(responseCode = "404", description = "User or account not found")
+    })
     public List<Transaction> getTransactions(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber) {
@@ -81,6 +109,13 @@ public class TransactionController {
     }
 
     @PostMapping("/admin/reverse")
+    @Operation(summary = "Reverse transaction (admin)", description = "Admin-only: Reverse a transaction (deposit, withdrawal, transfer).")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Transaction reversed"),
+            @ApiResponse(responseCode = "404", description = "Transaction not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid reversal or insufficient funds"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
     public Transaction reverseTransaction(@RequestBody @Valid ReverseTransactionRequest request) {
         User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Admin [{}] requested reversal for transaction [{}] with reason: {}", actingAdmin.getId(), request.getTransactionId(), request.getReason());
@@ -91,6 +126,12 @@ public class TransactionController {
 
     @PostMapping("/filter")
     @PreAuthorize("#userPublicId == principal.publicIdentifier")
+    @Operation(summary = "Filter transactions", description = "Advanced filtering for transaction history.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Filtered transactions page"),
+            @ApiResponse(responseCode = "404", description = "User or account not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid filters")
+    })
     public Page<Transaction> filterTransactions(
             @PathVariable String userPublicId,
             @PathVariable String accountNumber,

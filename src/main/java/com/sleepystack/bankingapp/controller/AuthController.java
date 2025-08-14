@@ -11,6 +11,10 @@ import com.sleepystack.bankingapp.enums.UserStatus;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
 import com.sleepystack.bankingapp.util.UserMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,7 @@ import java.time.Instant;
 @RestController
 @RequestMapping("/auth")
 @Slf4j
+@Tag(name = "Authentication", description = "User registration, login, and password management")
 public class AuthController {
 
     private static final int MAX_LOGIN_ATTEMPTS = 5;
@@ -42,6 +47,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register a new user", description = "Creates a new user account.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "409", description = "Email or phone already exists"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     public UserResponse register(@RequestBody @Valid CreateUserRequest request) {
         log.info("Request to register user with email: {}", request.getEmail());
         User user = new User();
@@ -55,6 +66,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login", description = "Authenticate a user and receive a JWT.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login successful, JWT returned"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials or account locked"),
+            @ApiResponse(responseCode = "400", description = "Bad request")
+    })
     public String login(@RequestBody LoginRequest request) {
         log.info("Login attempt for email: {}", request.getEmail());
         User user = null;
@@ -105,6 +122,12 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
+    @Operation(summary = "Reset password", description = "Allows a logged-in user to change their password.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "400", description = "Bad request")
+    })
     public String resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = user.getEmail();
