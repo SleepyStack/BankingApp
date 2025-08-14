@@ -78,6 +78,10 @@ Built with **Spring Boot** and **MongoDB**.
     - Visit: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ---
+## 🔍 Health Check
+
+- The application exposes a health check endpoint at [`/actuator/health`](http://localhost:8080/actuator/health).
+- Useful for Kubernetes, Docker, AWS, etc. monitoring.
 
 ## 🤝 Contributing
 
