@@ -8,9 +8,6 @@ import lombok.Setter;
 @Setter
 public class ReverseTransactionRequest {
     @NotBlank
-    private String adminPublicId;
-
-    @NotBlank
     private String transactionId;
 
     @NotBlank
