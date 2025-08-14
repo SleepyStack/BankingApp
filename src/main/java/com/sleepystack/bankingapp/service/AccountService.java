@@ -95,8 +95,9 @@ public class AccountService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         account.setStatus(AccountStatus.CLOSED);
+        accountRepository.save(account);
         log.info("Closed account [{}]", accountNumber);
         adminAuditLogger.info("Admin [{}] closed account [{}]", actingAdmin.getPublicIdentifier(), accountNumber);
-        accountRepository.save(account);
+
     }
 }
