@@ -2,6 +2,7 @@ package com.sleepystack.bankingapp.controller;
 
 import com.sleepystack.bankingapp.dto.*;
 import com.sleepystack.bankingapp.model.Transaction;
+import com.sleepystack.bankingapp.model.User;
 import com.sleepystack.bankingapp.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -80,9 +82,10 @@ public class TransactionController {
 
     @PostMapping("/admin/reverse")
     public Transaction reverseTransaction(@RequestBody @Valid ReverseTransactionRequest request) {
-        log.info("Admin [{}] requested reversal for transaction [{}] with reason: {}", request.getAdminPublicId(), request.getTransactionId(), request.getReason());
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Admin [{}] requested reversal for transaction [{}] with reason: {}", actingAdmin.getId(), request.getTransactionId(), request.getReason());
         Transaction reversedTxn = transactionService.reverseTransaction(request.getTransactionId(), request.getReason());
-        log.info("Reversal completed for transaction [{}] by admin [{}]", request.getTransactionId(), request.getAdminPublicId());
+        log.info("Reversal completed for transaction [{}] by admin [{}]", request.getTransactionId(), actingAdmin.getId());
         return reversedTxn;
     }
 
