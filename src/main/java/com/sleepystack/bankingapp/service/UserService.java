@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.service;
 
+import com.sleepystack.bankingapp.enums.UserRole;
 import com.sleepystack.bankingapp.exception.DuplicateKeyException;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
@@ -52,7 +53,7 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(new ArrayList<>(List.of("ROLE_USER"))); // Default role
+            user.setRoles(new ArrayList<>(List.of(UserRole.ROLE_USER.name())));
         }
         user.setStatus(UserStatus.ACTIVE);
         User saved = userRepository.save(user);
