@@ -30,21 +30,20 @@ This is a running TODO for remaining and upcoming tasks in the Banking App proje
 
 ### 3. Security & Validation
 - [X] Rate limiting for login and sensitive endpoints
-- [ ] Audit log for admin actions (deleting users/accounts, etc.)
-- [ ] Input validation improvements across all endpoints
+- [X] Audit log for admin actions (deleting users/accounts, etc.)
+- [X] Input validation improvements across all endpoints
 
 ### 4. Admin/Operator Features
-- [ ] Admin endpoints for user/account management
-- [ ] Role-based access control (RBAC): restrict actions based on roles
-- [ ] Dashboard endpoints: system stats, total balances, etc.
+- [X] Admin endpoints for user/account management
+- [X] Role-based access control (RBAC): restrict actions based on roles
 
 ---
 
 ## API & Documentation
 
 - [ ] Review and improve Swagger/OpenAPI docs
-- [ ] Add example requests/responses
-- [ ] Document error responses and status codes
+- [X] Add example requests/responses
+- [X] Document error responses and status codes
 
 ---
 
