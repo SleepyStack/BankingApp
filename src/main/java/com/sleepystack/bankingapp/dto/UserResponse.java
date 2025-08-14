@@ -1,6 +1,6 @@
 package com.sleepystack.bankingapp.dto;
 
-import com.sleepystack.bankingapp.model.enums.UserStatus;
+import com.sleepystack.bankingapp.enums.UserStatus;
 import lombok.Getter;
 import lombok.Setter;
 

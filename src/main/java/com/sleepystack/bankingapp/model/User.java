@@ -1,6 +1,6 @@
 package com.sleepystack.bankingapp.model;
 
-import com.sleepystack.bankingapp.model.enums.UserStatus;
+import com.sleepystack.bankingapp.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

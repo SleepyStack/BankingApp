@@ -1,7 +1,7 @@
 package com.sleepystack.bankingapp.model;
 
-import com.sleepystack.bankingapp.model.enums.TransactionStatus;
-import com.sleepystack.bankingapp.model.enums.TransactionType;
+import com.sleepystack.bankingapp.enums.TransactionStatus;
+import com.sleepystack.bankingapp.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

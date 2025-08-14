@@ -1,4 +1,4 @@
-package com.sleepystack.bankingapp.model.enums;
+package com.sleepystack.bankingapp.enums;
 
 public enum TransactionStatus {
     PENDING,

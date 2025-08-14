@@ -7,7 +7,7 @@ import com.sleepystack.bankingapp.dto.UserResponse;
 import com.sleepystack.bankingapp.exception.ResourceNotFoundException;
 import com.sleepystack.bankingapp.exception.UnauthorizedActionException;
 import com.sleepystack.bankingapp.model.User;
-import com.sleepystack.bankingapp.model.enums.UserStatus;
+import com.sleepystack.bankingapp.enums.UserStatus;
 import com.sleepystack.bankingapp.service.JsonWebTokenService;
 import com.sleepystack.bankingapp.service.UserService;
 import com.sleepystack.bankingapp.util.UserMapper;

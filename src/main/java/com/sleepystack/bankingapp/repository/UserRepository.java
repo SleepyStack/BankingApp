@@ -1,6 +1,6 @@
 package com.sleepystack.bankingapp.repository;
 import com.sleepystack.bankingapp.model.User;
-import com.sleepystack.bankingapp.model.enums.UserStatus;
+import com.sleepystack.bankingapp.enums.UserStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
 package com.sleepystack.bankingapp.repository;
 
 import com.sleepystack.bankingapp.model.Transaction;
-import com.sleepystack.bankingapp.model.enums.TransactionType;
-import com.sleepystack.bankingapp.model.enums.TransactionStatus;
+import com.sleepystack.bankingapp.enums.TransactionType;
+import com.sleepystack.bankingapp.enums.TransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
