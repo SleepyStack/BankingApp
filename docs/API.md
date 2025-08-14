@@ -8,6 +8,9 @@
 | POST   | /auth/login                                                | Login, get JWT token              | Public            | LoginRequest                  | String (JWT)  |
 | POST   | /auth/reset-password                                       | Reset password (old req)          | User (self)       | ResetPasswordRequest          | String        |
 | GET    | /home                                                      | Welcome message                   | Public            | -                             | String        |
+| GET    | /actuator/health                                           | Health check endpoint             | Public*           | -                             | JSON (Health) |
+
+> \* `/actuator/health` is exposed for liveness/readiness checks and does not require authentication by default. It provides a status summary for the app and database.
 
 ### Users (Admin)
 
@@ -49,6 +52,25 @@
 | GET    | /users/{userPublicId}/accounts/{accountNumber}/transactions                | Get transaction history           | User (self)       | -                             | List<Transaction> |
 | POST   | /users/{userPublicId}/accounts/{accountNumber}/transactions/admin/reverse  | Reverse a transaction             | Admin             | ReverseTransactionRequest      | Transaction  |
 | POST   | /users/{userPublicId}/accounts/{accountNumber}/transactions/filter         | Filter & paginate transactions    | User (self)       | TransactionHistoryFilterRequest| Page<Transaction> |
+
+---
+
+## Special Endpoints
+
+### Health/Liveness
+
+- **GET `/actuator/health`**
+    - Returns a JSON object describing the health of the application and its dependencies (like MongoDB).
+    - Example response:
+      ```json
+      {
+        "status": "UP",
+        "components": {
+          "mongo": { "status": "UP" },
+          ...
+        }
+      }
+      ```
 
 ---
 
