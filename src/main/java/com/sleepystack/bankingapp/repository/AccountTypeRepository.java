@@ -11,5 +11,4 @@ import java.util.Optional;
 @Repository
 public interface AccountTypeRepository extends MongoRepository<AccountType, String> {
     Optional<AccountType> findByPublicIdentifier(String publicIdentifier);
-    List<Account> findAllByUserIdAndStatus(String userId, AccountStatus status);
 }

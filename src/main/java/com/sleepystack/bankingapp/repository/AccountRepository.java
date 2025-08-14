@@ -1,5 +1,6 @@
 package com.sleepystack.bankingapp.repository;
 import com.sleepystack.bankingapp.model.Account;
+import com.sleepystack.bankingapp.model.enums.AccountStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,5 @@ public interface AccountRepository extends MongoRepository<Account, String> {
     List<Account> findAllByUserId(String userId);
     Optional<Account> findByAccountNumberAndUserId(String accountNumber, String userId);
     List<Account> findAllByUserIdAndAccountTypeId(String userId, String accountTypeId);
+    List<Account> findAllByUserIdAndStatus(String userId, AccountStatus status);
 }

@@ -12,5 +12,4 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends MongoRepository<Transaction, String>, TransactionRepositoryCustom {
     List<Transaction> findByAccountNumberOrderByTimestampDesc(String accountNumber);
-    List<Transaction> findByInitiatedByUserIdOrderByTimestampDesc(String userId);
 }
