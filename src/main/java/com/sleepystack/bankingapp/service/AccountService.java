@@ -98,6 +98,5 @@ public class AccountService {
         accountRepository.save(account);
         log.info("Closed account [{}]", accountNumber);
         adminAuditLogger.info("Admin [{}] closed account [{}]", actingAdmin.getPublicIdentifier(), accountNumber);
-
     }
 }
