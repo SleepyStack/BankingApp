@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,9 +91,12 @@ public class AccountService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public void closeAccountByAccountNumber(String accountNumber) {
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         account.setStatus(AccountStatus.CLOSED);
         log.info("Closed account [{}]", accountNumber);
+        adminAuditLogger.info("Admin [{}] closed account [{}]", actingAdmin.getPublicIdentifier(), accountNumber);
+        accountRepository.save(account);
     }
 }

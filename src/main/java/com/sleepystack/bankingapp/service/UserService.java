@@ -116,6 +116,7 @@ public class UserService {
         }
         user.setStatus(UserStatus.DEACTIVATED);
         log.info("Deleted user [{}] and all their accounts", publicId);
+        adminAuditLogger.info("Admin [{}] deleted user [{}]", SecurityContextHolder.getContext().getAuthentication().getName(), publicId);
     }
 
     public User getUserByEmail(@Email(message = "Invalid email address") @NotBlank(message = "Email is required") String email) {
