@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,6 +157,7 @@ public class UserService {
     }
     @PreAuthorize("hasRole('ADMIN')")
     public User promoteToAdmin(String publicId) {
+        User actingAdmin = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByPublicIdentifier(publicId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         List<String> roles = user.getRoles();
@@ -165,6 +167,7 @@ public class UserService {
             userRepository.save(user);
             log.info("Promoted user [{}] to admin.", publicId);
         }
+        adminAuditLogger.info("Admin [{}] promoted user [{}] to admin.", actingAdmin.getPublicIdentifier(), publicId);
         return user;
     }
 }
