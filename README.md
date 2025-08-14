@@ -45,7 +45,7 @@ A secure, modern banking application backend built using Spring Boot and MongoDB
 
 This project is still in active development. More features (admin tools, advanced security, testing, frontend) are planned.
 
-For a list of remaining tasks and upcoming features, see [NOTES.txt](./NOTES.txt).
+For a list of remaining tasks and upcoming features, see [NOTES.txt](docs/NOTES.txt).
 
 ---
 
