@@ -73,7 +73,7 @@ public class TransactionController {
         return txns;
     }
 
-    @PostMapping("/reverse")
+    @PostMapping("/admin/reverse")
     public Transaction reverseTransaction(@RequestBody @Valid ReverseTransactionRequest request) {
         log.info("Admin [{}] requested reversal for transaction [{}] with reason: {}", request.getAdminPublicId(), request.getTransactionId(), request.getReason());
         Transaction reversedTxn = transactionService.reverseTransaction(request.getAdminPublicId(), request.getTransactionId(), request.getReason());

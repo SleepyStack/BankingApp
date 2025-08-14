@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/account-types")
+@RequestMapping("/admin/account-types")
 @Slf4j
 public class AccountTypeController {
     private final AccountTypeService accountTypeService;
@@ -22,7 +22,7 @@ public class AccountTypeController {
         this.accountTypeService = accountTypeService;
     }
 
-    @PostMapping
+    @PostMapping()
     public AccountType createAccountType(@RequestBody AccountType type) {
         String publicIdentifier = type.getPublicIdentifier();
         if (publicIdentifier == null || !publicIdentifier.matches("^[A-Za-z]{2}$")) {
