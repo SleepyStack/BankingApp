@@ -3,6 +3,8 @@ package com.sleepystack.bankingapp.controller;
 import com.sleepystack.bankingapp.model.AccountType;
 import com.sleepystack.bankingapp.service.AccountTypeService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class AccountTypeController {
     private final AccountTypeService accountTypeService;
+    private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
 
     @Autowired
     public AccountTypeController(AccountTypeService accountTypeService) {

@@ -4,6 +4,8 @@ import com.sleepystack.bankingapp.dto.CreateAccountRequest;
 import com.sleepystack.bankingapp.model.Account;
 import com.sleepystack.bankingapp.service.AccountService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccountController {
     private final AccountService accountService;
+    private static final Logger adminAuditLogger = LoggerFactory.getLogger("adminAuditLogger");
 
     @Autowired
     public AccountController(AccountService accountService){
