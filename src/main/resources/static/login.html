@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple OAuth2 Login</title>
+</head>
+<body>
+<h1>Banking App – OAuth2 Demo</h1>
+<button id="loginBtn">Login with OAuth Provider</button>
+
+<script>
+    // Replace these with your actual client details and endpoints!
+    const CLIENT_ID = "YOUR_CLIENT_ID";
+    const REDIRECT_URI = "http://localhost:8080/callback"; // Your backend or local server
+    const AUTHORIZATION_ENDPOINT = "https://provider.com/oauth2/authorize";
+    const RESPONSE_TYPE = "code";
+    const SCOPE = "openid profile email"; // Adjust scope as needed
+
+    document.getElementById("loginBtn").onclick = function() {
+        const authUrl =
+            `${AUTHORIZATION_ENDPOINT}?response_type=${RESPONSE_TYPE}` +
+            `&client_id=${encodeURIComponent(CLIENT_ID)}` +
+            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+            `&scope=${encodeURIComponent(SCOPE)}`;
+        window.location.href = authUrl;
+    };
+</script>
+</body>
+</html>

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @Slf4j
 @Tag(name = "Authentication", description = "User registration, login, and password management")
 public class AuthController {
