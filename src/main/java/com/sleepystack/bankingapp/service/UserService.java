@@ -45,7 +45,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        String publicId = UserIdGenerator.generateUserId();
+        String publicId = UserIdGenerator.generateUUID();
         user.setPublicIdentifier(publicId);
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateKeyException("Email already registered.");

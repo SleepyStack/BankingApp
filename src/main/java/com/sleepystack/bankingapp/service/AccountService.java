@@ -9,7 +9,7 @@ import com.sleepystack.bankingapp.enums.AccountStatus;
 import com.sleepystack.bankingapp.repository.AccountRepository;
 import com.sleepystack.bankingapp.repository.UserRepository;
 import com.sleepystack.bankingapp.repository.AccountTypeRepository;
-import com.sleepystack.bankingapp.util.AccountNumberGenerator;
+import com.sleepystack.bankingapp.util.UserIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,33 +43,14 @@ public class AccountService {
         AccountType accountType = accountTypeRepository.findByPublicIdentifier(accountTypePublicIdentifier)
                 .orElseThrow(() -> new ResourceNotFoundException("Account type not found"));
 
-        int maxTries = 5;
-        for (int attempt = 1; attempt <= maxTries; attempt++) {
-            String accountNumber;
-            do {
-                accountNumber = AccountNumberGenerator.generateAccountNumber();
-            } while (accountRepository.existsByAccountNumber(accountNumber));
+            String accountNumber = UserIdGenerator.generateUUID();
             account.setUserId(user.getId());
             account.setAccountTypeId(accountType.getId());
             account.setAccountNumber(accountNumber);
             account.setStatus(AccountStatus.ACTIVE);
-            try {
-                Account saved = accountRepository.save(account);
-                log.info("Created new account [{}] for user [{}] with type [{}]", accountNumber, userPublicId, accountTypePublicIdentifier);
-                return saved;
-            } catch (DuplicateKeyException e) {
-                log.warn("Duplicate account number [{}] generated for user [{}], attempt {}/{}", accountNumber, userPublicId, attempt, maxTries);
-                if (attempt == maxTries) {
-                    log.error("Failed to create account after {} attempts for user [{}]", maxTries, userPublicId);
-                    throw new DuplicateKeyException("Failed to create account after " + maxTries + " attempts due to duplicate account numbers.");
-                }
-            } catch (Exception e) {
-                log.error("Unexpected error while creating account for user [{}]: {}", userPublicId, e.getMessage(), e);
-                throw e;
-            }
-        }
-        log.error("Unable to create account after retries for user [{}]", userPublicId);
-        throw new IllegalStateException("Unable to create account after retries");
+        Account saved = accountRepository.save(account);
+        log.info("Created new account [{}] for user [{}] with type [{}]", accountNumber, userPublicId, accountTypePublicIdentifier);
+        return saved;
     }
 
     public List<Account> findAllByUserPublicId(String userPublicId) {
